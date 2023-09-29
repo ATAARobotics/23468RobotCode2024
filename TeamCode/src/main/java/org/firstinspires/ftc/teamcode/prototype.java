@@ -15,12 +15,17 @@ float RTtrigger;
         Servo0 = hardwareMap.get(Servo.class, "Servo0");
         RTtrigger = gamepad1.right_trigger;
 
+        waitForStart();
+
         while (opModeIsActive()) {
             RTtrigger = gamepad1.right_trigger;
+            telemetry.addData("Trigger > ", RTtrigger);
             if (RTtrigger > 0.0) {
                 Servo0.setPosition(0.5);
             }
             Servo0.setPosition(0.0);
+
+            telemetry.update();
         }
     }
 }
