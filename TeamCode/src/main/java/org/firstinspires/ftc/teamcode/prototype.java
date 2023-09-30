@@ -29,8 +29,10 @@ float LTtrigger;
             telemetry.addData("Trigger > ", RTtrigger);
             if (RTtrigger > 0.0) {
                 Servo0.setPosition(0.5);
+            } else {
+                Servo0.setPosition(0.0);
             }
-            Servo0.setPosition(0.0);
+            
 
             telemetry.update();
         }

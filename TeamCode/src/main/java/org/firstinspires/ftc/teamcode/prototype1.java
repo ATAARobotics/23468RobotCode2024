@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "Concept: Servo0", group = "Concept")
+@TeleOp(name = "Concept: motor0", group = "Concept")
 public class prototype1 extends LinearOpMode {
     DcMotor motor0;
     DcMotor motor1;
