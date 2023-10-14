@@ -27,9 +27,15 @@ public class RobotUmmdrive_Iterative extends OpMode {
         @Override
         public void loop() {
 
+        double x = gamepad1.right_stick_x;
+        double y = -gamepad1.right_stick_y;
+        double rx = gamepad1.left_stick_x;
 
-
-
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            motor0.setPower((y + x + rx) / denominator);
+            motor1.setPower((y - x - rx) / denominator);
+            motor2.setPower((y - x + rx) / denominator);
+            motor3.setPower((y + x - rx) / denominator);
 
 
             //fwrd = (1:f),(2:f),(3:f),(4:f)
@@ -41,48 +47,48 @@ public class RobotUmmdrive_Iterative extends OpMode {
 
 
 
-            if(gamepad1.right_stick_x == 1){
-
-                    motor0.setPower(0.7);
-                    motor1.setPower(-0.7);
-                    motor2.setPower(-0.7);
-                    motor3.setPower(-0.7);
-            } //x = left/right
-
-            if(gamepad1.right_stick_x == -1){
-
-                    motor0.setPower(0.7);
-                    motor1.setPower(-0.7);
-                    motor2.setPower(-0.7);
-                    motor3.setPower(-0.7);
-            }
-
-            if(gamepad1.right_stick_y == -1){
-
-                    motor0.setPower(-0.7);
-                    motor1.setPower(-0.7);
-                    motor2.setPower(0.7);
-                    motor3.setPower(-0.7);
-            }
-
-            if(gamepad1.right_stick_y == 1) {
-
-                motor0.setPower(0.7);
-                motor1.setPower(0.7);
-                motor2.setPower(-0.7);
-                motor3.setPower(0.7);
-
-            } // y = forward/backwords
-
-            if(gamepad1.right_stick_y == 0 && gamepad1.right_stick_x == 0){
-
-                    motor0.setPower(0);
-                    motor1.setPower(0);
-                    motor2.setPower(0);
-                    motor3.setPower(0);
-            }
-
-
+//            if(gamepad1.right_stick_x == 1){
+//
+//                    motor0.setPower(0.7);
+//                    motor1.setPower(-0.7);
+//                    motor2.setPower(-0.7);
+//                    motor3.setPower(-0.7);
+//            } //x = left/right
+//
+//            if(gamepad1.right_stick_x == -1){
+//
+//                    motor0.setPower(0.7);
+//                    motor1.setPower(-0.7);
+//                    motor2.setPower(-0.7);
+//                    motor3.setPower(-0.7);
+//            }
+//
+//            if(gamepad1.right_stick_y == -1){
+//
+//                    motor0.setPower(-0.7);
+//                    motor1.setPower(-0.7);
+//                    motor2.setPower(0.7);
+//                    motor3.setPower(-0.7);
+//            }
+//
+//            if(gamepad1.right_stick_y == 1) {
+//
+//                motor0.setPower(0.7);
+//                motor1.setPower(0.7);
+//                motor2.setPower(-0.7);
+//                motor3.setPower(0.7);
+//
+//            } // y = forward/backwords
+//
+//            if(gamepad1.right_stick_y == 0 && gamepad1.right_stick_x == 0){
+//
+//                    motor0.setPower(0);
+//                    motor1.setPower(0);
+//                    motor2.setPower(0);
+//                    motor3.setPower(0);
+//            }
+//
+//
 
         }
             double left;
