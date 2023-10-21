@@ -11,6 +11,7 @@ public class RobotUmmdrive_Iterative extends OpMode {
     public DcMotor  motor1  = null;
     public DcMotor motor2 = null;
     public DcMotor motor3 = null;
+    public DcMotor motor4 = null;
     @Override
     public void init() {
 
@@ -19,6 +20,7 @@ public class RobotUmmdrive_Iterative extends OpMode {
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
+        motor4 = hardwareMap.get(DcMotor.class, "motor4");
     }
 
 
@@ -31,12 +33,24 @@ public class RobotUmmdrive_Iterative extends OpMode {
         double y = -gamepad1.right_stick_y;
         double rx = gamepad1.left_stick_x;
         double sped = 0.7;
+        boolean self_hang = gamepad1.y;
+        boolean self_destruct = gamepad1.b;
           double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             motor0.setPower((-y - x - rx) / denominator * sped);
             motor1.setPower((y - x - rx) / denominator * sped);
             motor2.setPower((-y + x - rx) / denominator * sped);
             motor3.setPower((y + x - rx) / denominator * sped);
+            if (self_hang) {
+                motor4.setPower(0.4);
 
+            }else {
+                motor4.setPower(0);
+            }
+            if (self_destruct) {
+                motor4.setPower(-0.2);
+            }else {
+                motor4.setPower(0);
+            }
 
             //fwrd = (1:f),(2:f),(3:f),(4:f)
             //leftspin = (1:b),(2:f),(3:b),(4:f)
