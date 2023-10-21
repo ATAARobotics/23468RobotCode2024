@@ -30,12 +30,12 @@ public class RobotUmmdrive_Iterative extends OpMode {
         double x = gamepad1.right_stick_x;
         double y = -gamepad1.right_stick_y;
         double rx = gamepad1.left_stick_x;
-
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            motor0.setPower((y + x + rx) / denominator);
-            motor1.setPower((y - x - rx) / denominator);
-            motor2.setPower((y - x + rx) / denominator);
-            motor3.setPower((y + x - rx) / denominator);
+        double sped = 0.7;
+          double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            motor0.setPower((-y - x - rx) / denominator * sped);
+            motor1.setPower((y - x - rx) / denominator * sped);
+            motor2.setPower((-y + x - rx) / denominator * sped);
+            motor3.setPower((y + x - rx) / denominator * sped);
 
 
             //fwrd = (1:f),(2:f),(3:f),(4:f)

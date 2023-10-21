@@ -74,3 +74,43 @@ float LTtrigger;
         }
     }
 }
+
+//             if(gamepad1.right_stick_x == 1){
+//
+//                    motor0.setPower(0.7);
+//                    motor1.setPower(-0.7);
+//                    motor2.setPower(-0.7);
+//                    motor3.setPower(-0.7);
+//            } //x = left/right
+//
+//            if(gamepad1.right_stick_x == -1){
+//
+//                    motor0.setPower(0.7);
+//                    motor1.setPower(-0.7);
+//                    motor2.setPower(-0.7);
+//                    motor3.setPower(-0.7);
+//            }
+//
+//            if(gamepad1.right_stick_y == -1){
+//
+//                    motor0.setPower(-0.7);
+//                    motor1.setPower(-0.7);
+//                    motor2.setPower(0.7);
+//                    motor3.setPower(-0.7);
+//            }
+//
+//            if(gamepad1.right_stick_y == 1) {
+//
+//                motor0.setPower(0.7);
+//                motor1.setPower(0.7);
+//                motor2.setPower(-0.7);
+//                motor3.setPower(0.7);
+//
+//            } // y = forward/backwords
+//
+//            if(gamepad1.right_stick_y == 0 && gamepad1.right_stick_x == 0){
+//
+//                    motor0.setPower(0);
+//                    motor1.setPower(0);
+//                    motor2.setPower(0);
+//                    motor3.setPower(0);
