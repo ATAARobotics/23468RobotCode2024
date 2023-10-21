@@ -29,6 +29,9 @@ public class prototype1 extends LinearOpMode {
     AprilTagProcessor aprilTag;
     private TfodProcessor tfod;
 
+    public DcMotor motor2 = null;
+    public DcMotor motor3 = null;
+
     float RTtrigger;
 float LTtrigger;
     @Override
@@ -38,7 +41,14 @@ float LTtrigger;
         LTtrigger = gamepad1.left_trigger;
         motor0 = hardwareMap.get(DcMotor.class, "motor0");
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
+        motor2 = hardwareMap.get(DcMotor.class, "motor2");
+        motor3 = hardwareMap.get(DcMotor.class, "motor3");
         tfod = new TfodProcessor.Builder()
+//
+//        `double x = gamepad1.right_stick_x;
+//        double y = -gamepad1.right_stick_y;
+//        double rx = gamepad1.left_stick_x;
+
                 // Use setModelAssetName() if the TF Model is built in as an asset.
                 // Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
                 //.setModelAssetName(TFOD_MODEL_ASSET)
@@ -63,6 +73,9 @@ float LTtrigger;
         while (opModeIsActive()) {
             RTtrigger = gamepad1.right_trigger;
             LTtrigger = gamepad1.left_trigger;
+            double x = gamepad1.right_stick_x;
+            double y = -gamepad1.right_stick_y;
+            double rx = gamepad1.left_stick_x;
             telemetry.addData("Trigger > ", RTtrigger);
             if (RTtrigger == 1) {
 
