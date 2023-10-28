@@ -19,7 +19,9 @@ public class RobotUmmdrive_Iterative extends OpMode {
 
     float RTtrigger;
     float LTtrigger;
+    float LTtrigger2;
     float RTtrigger2;
+    boolean Abutton;
     @Override
     public void init() {
 
@@ -34,7 +36,10 @@ public class RobotUmmdrive_Iterative extends OpMode {
         Servo3 = hardwareMap.get(Servo.class, "Servo2");
         RTtrigger = gamepad1.right_trigger;
         LTtrigger = gamepad1.left_trigger;
+        LTtrigger2 = gamepad2.left_trigger;
         RTtrigger2 = gamepad2.right_trigger;
+        Abutton = gamepad2.a;
+
     }
 
 
@@ -43,27 +48,26 @@ public class RobotUmmdrive_Iterative extends OpMode {
         @Override
         public void loop() {
 
-            RTtrigger = gamepad1.right_trigger;
-            LTtrigger = gamepad1.left_trigger;
-            telemetry.addData("Trigger > ", RTtrigger);
-            if (RTtrigger > 0.0) {
+            RTtrigger2 = gamepad1.right_trigger;
+            LTtrigger2 = gamepad1.left_trigger;
+            telemetry.addData("Trigger > ", RTtrigger2);
+            if (RTtrigger2 > 0.0) {
                 Servo1.setPosition(0.5);
             } else {
                 Servo1.setPosition(0.0);
             }
-                telemetry.addData("Trigger > ", LTtrigger);
-                if (LTtrigger > 0.0) {
+                telemetry.addData("Trigger > ", LTtrigger2);
+                if (LTtrigger2 > 0.0) {
                     Servo2.setPosition(0.5);
                 } else {
                     Servo2.setPosition(0.0);
                 }
-                telemetry.addData("Trigger > ", RTtrigger2);
-                if (RTtrigger2 > 0.0) {
+                telemetry.addData("A button > ",Abutton);
+                if (Abutton) {
                     Servo3.setPosition(0.5);
                 } else {
                     Servo3.setPosition(0.0);
             }
-
         double x = gamepad1.right_stick_x;
         double y = -gamepad1.right_stick_y;
         double rx = gamepad1.left_stick_x;
