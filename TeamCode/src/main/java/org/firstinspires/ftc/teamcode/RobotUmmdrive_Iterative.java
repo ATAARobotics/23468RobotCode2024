@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="Robot: Ummdrive", group="drive")
 public class RobotUmmdrive_Iterative extends OpMode {
@@ -12,6 +13,13 @@ public class RobotUmmdrive_Iterative extends OpMode {
     public DcMotor motor2 = null;
     public DcMotor motor3 = null;
     public DcMotor motor4 = null;
+    public Servo Servo1;
+    public Servo Servo2;
+    public Servo Servo3;
+
+    float RTtrigger;
+    float LTtrigger;
+    float RTtrigger2;
     @Override
     public void init() {
 
@@ -21,6 +29,12 @@ public class RobotUmmdrive_Iterative extends OpMode {
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
         motor4 = hardwareMap.get(DcMotor.class, "motor4");
+        Servo1 = hardwareMap.get(Servo.class, "Servo1");
+        Servo2 = hardwareMap.get(Servo.class, "Servo2");
+        Servo3 = hardwareMap.get(Servo.class, "Servo2");
+        RTtrigger = gamepad1.right_trigger;
+        LTtrigger = gamepad1.left_trigger;
+        RTtrigger2 = gamepad2.right_trigger;
     }
 
 
@@ -28,6 +42,27 @@ public class RobotUmmdrive_Iterative extends OpMode {
 
         @Override
         public void loop() {
+
+            RTtrigger = gamepad1.right_trigger;
+            LTtrigger = gamepad1.left_trigger;
+            telemetry.addData("Trigger > ", RTtrigger);
+            if (RTtrigger > 0.0) {
+                Servo1.setPosition(0.5);
+            } else {
+                Servo1.setPosition(0.0);
+            }
+                telemetry.addData("Trigger > ", LTtrigger);
+                if (LTtrigger > 0.0) {
+                    Servo2.setPosition(0.5);
+                } else {
+                    Servo2.setPosition(0.0);
+                }
+                telemetry.addData("Trigger > ", RTtrigger2);
+                if (RTtrigger2 > 0.0) {
+                    Servo3.setPosition(0.5);
+                } else {
+                    Servo3.setPosition(0.0);
+            }
 
         double x = gamepad1.right_stick_x;
         double y = -gamepad1.right_stick_y;

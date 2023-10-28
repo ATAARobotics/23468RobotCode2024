@@ -68,6 +68,8 @@ float LTtrigger;
         aprilTag = new AprilTagProcessor.Builder()
                 .build();
 
+
+
         waitForStart();
 
         while (opModeIsActive()) {
