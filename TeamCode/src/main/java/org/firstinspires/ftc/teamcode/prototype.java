@@ -18,8 +18,14 @@ boolean Abutton;
     double x = gamepad1.right_stick_x;
     double y = -gamepad1.right_stick_y;
     double rx = gamepad1.left_stick_x;
+    public DcMotor Dave = null;
+
+
     double sped = 0.7;
     double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+    double daveprev = 0;
+    double davecur = 0;
+    double daveyes = 0;
 
 
     int state=0;
@@ -32,12 +38,14 @@ boolean Abutton;
         motor0 = hardwareMap.get(DcMotor.class, "motor0");
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         Abutton = gamepad1.a;
-            motor2 = hardwareMap.get(DcMotor.class, "motor2");
-            motor3 = hardwareMap.get(DcMotor.class, "motor3");
+        motor2 = hardwareMap.get(DcMotor.class, "motor2");
+        motor3 = hardwareMap.get(DcMotor.class, "motor3");
+        Dave = hardwareMap.get(DcMotor.class, "Dave");
 
         waitForStart();
 
         while (opModeIsActive()) {
+            davecur = Dave.getCurrentPosition();
             RTtrigger = gamepad1.right_trigger;
             LTtrigger = gamepad1.left_trigger;
             telemetry.addData("Trigger > ", RTtrigger);
@@ -100,6 +108,16 @@ boolean Abutton;
                 }
                 // dump pixel
             }
+
+
+            daveyes = davecur - daveprev;
+            daveprev = davecur;
+
+
+
+
+            telemetry.addData("Dave's data", daveyes);
+
 
 
 
