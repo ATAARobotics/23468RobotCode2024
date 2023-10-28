@@ -19,6 +19,8 @@ boolean Abutton;
     double y = -gamepad1.right_stick_y;
     double rx = gamepad1.left_stick_x;
     public DcMotor Dave = null;
+    boolean monkey = true;
+
 
 
     double sped = 0.7;
@@ -26,6 +28,7 @@ boolean Abutton;
     double daveprev = 0;
     double davecur = 0;
     double daveyes = 0;
+    double zerodave = 0;
 
 
     int state=0;
@@ -45,7 +48,7 @@ boolean Abutton;
         waitForStart();
 
         while (opModeIsActive()) {
-            davecur = Dave.getCurrentPosition();
+            davecur = Dave.getCurrentPosition() - zerodave;
             RTtrigger = gamepad1.right_trigger;
             LTtrigger = gamepad1.left_trigger;
             telemetry.addData("Trigger > ", RTtrigger);
@@ -56,15 +59,27 @@ boolean Abutton;
             }
 
 
-            if (state==0) {//check center 1/ if yes monbkey
+            if (state==0) {
+                if (monkey) {
+                    state = 1;
+                }
 
             }else if (state == 1) {
                 motor0.setPower(1);
                 motor1.setPower(-1);
                 motor2.setPower(1);
                 motor3.setPower(-1) ;
-                // drive to 1
-            }else if (state == 2){
+
+                if (davecur >= 11700) {
+                    state = 2;
+                    zerodave = Dave.getCurrentPosition();
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
+                }
+
+                }else if (state == 2){
                 if (RTtrigger > 0.0) {
                     Servo0.setPosition(0.5);
                 } else {
@@ -116,10 +131,10 @@ boolean Abutton;
 
 
 
-            telemetry.addData("Dave's data", daveyes);
 
+            telemetry.addData("Dave's change", daveyes);
 
-
+            telemetry.addData("Dave's current data", davecur);
 
 
 

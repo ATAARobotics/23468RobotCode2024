@@ -52,7 +52,7 @@ float LTtrigger;
                 // Use setModelAssetName() if the TF Model is built in as an asset.
                 // Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
                 //.setModelAssetName(TFOD_MODEL_ASSET)
-                //.setModelFileName(TFOD_MODEL_FILE)
+                .setModelFileName("model_20231028_113257.tflite")
 
                 //.setModelLabels(LABELS)
                 //.setIsModelTensorFlow2(true)
