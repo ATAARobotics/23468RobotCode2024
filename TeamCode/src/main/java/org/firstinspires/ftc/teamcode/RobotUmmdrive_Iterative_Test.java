@@ -12,10 +12,10 @@ public class RobotUmmdrive_Iterative_Test extends OpMode {
     public DcMotor  motor1  = null;
     public DcMotor motor2 = null;
     public DcMotor motor3 = null;
-//    public DcMotor motor4 = null;
-//    public Servo Servo1;
-//    public Servo Servo2;
-//    public Servo Servo3;
+    public DcMotor motor4 = null;
+    public Servo Servo1;
+    public Servo Servo2;
+    public Servo Servo3;
 
     float RTtrigger;
     float LTtrigger;
@@ -30,8 +30,8 @@ public class RobotUmmdrive_Iterative_Test extends OpMode {
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
-//        motor4 = hardwareMap.get(DcMotor.class, "motor4");
-//        Servo1 = hardwareMap.get(Servo.class, "Servo1");
+        motor4 = hardwareMap.get(DcMotor.class, "motor4");
+        Servo1 = hardwareMap.get(Servo.class, "Servo1");
 //        Servo2 = hardwareMap.get(Servo.class, "Servo2");
 //        Servo3 = hardwareMap.get(Servo.class, "Servo2");
         RTtrigger = gamepad1.right_trigger;
@@ -51,11 +51,11 @@ public class RobotUmmdrive_Iterative_Test extends OpMode {
             RTtrigger2 = gamepad1.right_trigger;
             LTtrigger2 = gamepad1.left_trigger;
             telemetry.addData("Trigger > ", RTtrigger2);
-//            if (RTtrigger2 > 0.0) {
-//                Servo1.setPosition(0.5);
-//            } else {
-//                Servo1.setPosition(0.0);
-//            }
+            if (RTtrigger2 > 0.0) {
+                Servo1.setPosition(0.5);
+            } else {
+                Servo1.setPosition(0.0);
+            }
 //                telemetry.addData("Trigger > ", LTtrigger2);
 //                if (LTtrigger2 > 0.0) {
 //                    Servo2.setPosition(0.5);
@@ -71,7 +71,7 @@ public class RobotUmmdrive_Iterative_Test extends OpMode {
         double x = gamepad1.right_stick_x;
         double y = -gamepad1.right_stick_y;
         double rx = gamepad1.left_stick_x;
-        double sped = 0.7;
+        double sped = 0.2;
         boolean self_hang = gamepad1.y;
         boolean self_destruct = gamepad1.b;
           double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
@@ -79,17 +79,17 @@ public class RobotUmmdrive_Iterative_Test extends OpMode {
             motor1.setPower((y - x - rx) / denominator * sped);
             motor2.setPower((-y + x - rx) / denominator * sped);
             motor3.setPower((y + x - rx) / denominator * sped);
-//            if (self_hang) {
-//                motor4.setPower(0.4);
-//
-//            }else {
-//                motor4.setPower(0);
-//            }
-//            if (self_destruct) {
-//                motor4.setPower(-0.2);
-//            }else {
-//                motor4.setPower(0);
-//            }
+            if (self_hang) {
+                motor4.setPower(0.5);
+
+            }else {
+                motor4.setPower(0);
+            }
+            if (self_destruct) {
+                motor4.setPower(-0.5);
+            }else {
+                motor4.setPower(0);
+            }
 
             //fwrd = (1:f),(2:f),(3:f),(4:f)
             //leftspin = (1:b),(2:f),(3:b),(4:f)
