@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import android.util.Size;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -15,21 +15,16 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@TeleOp(name = "Concept: Servo0", group = "Concept")
-public class prototype2 extends LinearOpMode {
+@Autonomous(name = "Concept: Servo1", group = "Concept")
+public class monkey_Autonomous extends LinearOpMode {
     Servo Servo0;
     DcMotor motor0;
     DcMotor motor1;
-float RTtrigger;
-float LTtrigger;
-boolean Abutton;
     public DcMotor motor2 = null;
     public DcMotor motor3 = null;
-    double x = gamepad1.right_stick_x;
-    double y = -gamepad1.right_stick_y;
-    double rx = gamepad1.left_stick_x;
     public DcMotor Dave = null;
-    boolean monkey = true;
+    public DcMotor Jeff = null;
+    boolean monkey;
 
     VisionPortal portal1;
     AprilTagProcessor aprilTag;
@@ -38,11 +33,14 @@ boolean Abutton;
 
 
     double sped = 0.7;
-    double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
     double daveprev = 0;
     double davecur = 0;
     double daveyes = 0;
     double zerodave = 0;
+    double jeffprev = 0;
+    double jeffcur = 0;
+    double jeffyes = 0;
+    double zerojeff = 0;
     boolean redmonke;
     boolean listlength;
 
@@ -51,16 +49,13 @@ boolean Abutton;
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Servo0 = hardwareMap.get(Servo.class, "Servo0");
-        RTtrigger = gamepad1.right_trigger;
-        LTtrigger = gamepad1.left_trigger;
-        Abutton = gamepad1.a;
+        Servo0 = hardwareMap.get(Servo.class, "Servo3");
         motor0 = hardwareMap.get(DcMotor.class, "motor0");
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
         Dave = hardwareMap.get(DcMotor.class, "Dave");
-        redmonke = tfod.getRecognitions().size() > 0;
+        Jeff = hardwareMap.get(DcMotor.class, "Jeff");
 
         tfod = new TfodProcessor.Builder()
                 // Use setModelAssetName() if the TF Model is built in as an asset.
@@ -74,26 +69,21 @@ boolean Abutton;
                 //.setModelAspectRatio(16.0 / 9.0)
                 .build();
         portal1 = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCamera(hardwareMap.get(WebcamName.class,  "Webbed Monkey Cameras"))
                 .setCameraResolution(new Size(640, 480))
                 .addProcessor(tfod)
                 .build();
         aprilTag = new AprilTagProcessor.Builder()
                 .build();
 
+        zerojeff = Jeff.getCurrentPosition();
+        zerodave = Dave.getCurrentPosition();
+
         waitForStart();
 
         while (opModeIsActive()) {
             davecur = Dave.getCurrentPosition() - zerodave;
-            RTtrigger = gamepad1.right_trigger;
-            LTtrigger = gamepad1.left_trigger;
-            telemetry.addData("Trigger > ", RTtrigger);
-            if (RTtrigger > 0.0) {
-                Servo0.setPosition(0.5);
-            } else {
-                Servo0.setPosition(0.0);
-            }
-
+            jeffcur = Jeff.getCurrentPosition() - zerojeff;
 
             if (state==0) {
                 redmonke = tfod.getRecognitions().size() > 0;
@@ -101,10 +91,10 @@ boolean Abutton;
                     state = 1;
                 }else {
                     state = 3;
-                    motor0.setPower();
-                    motor1.setPower();
-                    motor2.setPower();
-                    motor3.setPower() ;
+                    motor0.setPower(1);
+                    motor1.setPower(1);
+                    motor2.setPower(1);
+                    motor3.setPower(1) ;
                 }
 
             }else if (state == 1) {
@@ -122,12 +112,8 @@ boolean Abutton;
                     motor3.setPower(0);
                 }
 
-                }else if (state == 2){
-                if (RTtrigger > 0.0) {
-                    Servo0.setPosition(0.5);
-                } else {
-                    Servo0.setPosition(0.0);
-                }
+            }else if (state == 2){
+                Servo0.setPosition(0.0);
                 // dump pixel
             }else if (state == 3){
                 motor0.setPower(-1);
@@ -175,19 +161,14 @@ boolean Abutton;
             }else if (state == 8){
 
                 // drive to monkey/line3
-            }else if (state == 2){
-                if (RTtrigger > 0.0) {
-                    Servo0.setPosition(0.5);
-                } else {
-                    Servo0.setPosition(0.0);
-                }
-                // dump pixel
             }
 
 
             daveyes = davecur - daveprev;
             daveprev = davecur;
 
+            jeffyes = jeffcur - jeffprev;
+            jeffprev = jeffcur;
 
 
 

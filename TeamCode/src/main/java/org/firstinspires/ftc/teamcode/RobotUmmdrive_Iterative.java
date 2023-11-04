@@ -31,14 +31,16 @@ public class RobotUmmdrive_Iterative extends OpMode {
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
         motor4 = hardwareMap.get(DcMotor.class, "motor4");
-        Servo1 = hardwareMap.get(Servo.class, "Servo1");
-        Servo2 = hardwareMap.get(Servo.class, "Servo2");
-        Servo3 = hardwareMap.get(Servo.class, "Servo2");
+        Servo1 = hardwareMap.get(Servo.class, "Servo1"); //arm release
+        Servo2 = hardwareMap.get(Servo.class, "Servo2"); //back door
+        Servo3 = hardwareMap.get(Servo.class, "Servo3"); //front door
         RTtrigger = gamepad1.right_trigger;
         LTtrigger = gamepad1.left_trigger;
         LTtrigger2 = gamepad2.left_trigger;
         RTtrigger2 = gamepad2.right_trigger;
         Abutton = gamepad2.a;
+
+        Servo2.setPosition(0.5);
 
     }
 
@@ -48,45 +50,48 @@ public class RobotUmmdrive_Iterative extends OpMode {
         @Override
         public void loop() {
 
-            RTtrigger2 = gamepad1.right_trigger;
-            LTtrigger2 = gamepad1.left_trigger;
-            telemetry.addData("Trigger > ", RTtrigger2);
-            if (RTtrigger2 > 0.0) {
-                Servo1.setPosition(0.5);
-            } else {
-                Servo1.setPosition(0.0);
-            }
-                telemetry.addData("Trigger > ", LTtrigger2);
-                if (LTtrigger2 > 0.0) {
-                    Servo2.setPosition(0.5);
-                } else {
-                    Servo2.setPosition(0.0);
-                }
-                telemetry.addData("A button > ",Abutton);
-                if (Abutton) {
-                    Servo3.setPosition(0.5);
-                } else {
-                    Servo3.setPosition(0.0);
-            }
-        double x = gamepad1.right_stick_x;
-        double y = -gamepad1.right_stick_y;
-        double rx = gamepad1.left_stick_x;
-        double sped = 0.7;
-        boolean self_hang = gamepad1.y;
-        boolean self_destruct = gamepad1.b;
-          double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            motor0.setPower((-y - x - rx) / denominator * sped);
-            motor1.setPower((y - x - rx) / denominator * sped);
-            motor2.setPower((-y + x - rx) / denominator * sped);
-            motor3.setPower((y + x - rx) / denominator * sped);
-            if (self_hang) {
-                motor4.setPower(0.4);
+            RTtrigger2 = gamepad2.right_trigger;
+            LTtrigger2 = gamepad2.left_trigger;
+            Abutton = gamepad2.a;
 
+            telemetry.addData("Abutton > ", Abutton);
+            if (Abutton) {
+                Servo1.setPosition(0.75);
+            } else {
+                Servo1.setPosition(0);
+            }
+            telemetry.addData("RTrigger > ", LTtrigger2);
+            if (LTtrigger2 > 0.0) {
+                Servo2.setPosition(0);
+            } else {
+                Servo2.setPosition(0.3);
+            }
+            telemetry.addData("RTrigger > ",RTtrigger2);
+            if (RTtrigger2 > 0.0) {
+                Servo3.setPosition(0.3);
+            } else {
+                Servo3.setPosition(0.0);
+            }
+            double x = gamepad1.right_stick_x;
+            double y = -gamepad1.right_stick_y;
+            double rx = gamepad1.left_stick_x;
+            double sped = 0.7;
+            double rxSped = 0.5;
+            boolean self_hang = gamepad2.y;
+            boolean self_destruct = gamepad2.b;
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            motor0.setPower((-y - x - rx * rxSped) / denominator * sped);
+            motor1.setPower((y - x - rx * rxSped) / denominator * sped);
+            motor2.setPower((-y + x - rx * rxSped) / denominator * sped);
+            motor3.setPower((y + x - rx * rxSped) / denominator * sped);
+
+            if (self_hang) {
+                motor4.setPower(1);
             }else {
                 motor4.setPower(0);
             }
             if (self_destruct) {
-                motor4.setPower(-0.2);
+                motor4.setPower(-.8);
             }else {
                 motor4.setPower(0);
             }
