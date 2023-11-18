@@ -22,6 +22,18 @@ public class RobotUmmdrive_Iterative extends OpMode {
     float LTtrigger2;
     float RTtrigger2;
     boolean Abutton;
+
+    double daveprev = 0;
+    double davecur = 0;
+    double daveyes = 0;
+    double zerodave = 0;
+    double jeffprev = 0;
+    double jeffcur = 0;
+    double jeffyes = 0;
+    double zerojeff = 0;
+
+    public DcMotor Dave = null;
+    public DcMotor Jeff = null;
     @Override
     public void init() {
 
@@ -34,6 +46,10 @@ public class RobotUmmdrive_Iterative extends OpMode {
         Servo1 = hardwareMap.get(Servo.class, "Servo1"); //arm release
         Servo2 = hardwareMap.get(Servo.class, "Servo2"); //back door
         Servo3 = hardwareMap.get(Servo.class, "Servo3"); //front door
+
+        Dave = hardwareMap.get(DcMotor.class, "Dave");
+        Jeff = hardwareMap.get(DcMotor.class, "Jeff");
+
         RTtrigger = gamepad1.right_trigger;
         LTtrigger = gamepad1.left_trigger;
         LTtrigger2 = gamepad2.left_trigger;
@@ -49,6 +65,13 @@ public class RobotUmmdrive_Iterative extends OpMode {
 
         @Override
         public void loop() {
+            davecur = Dave.getCurrentPosition() - zerodave;
+            jeffcur = Jeff.getCurrentPosition() - zerojeff;
+
+
+            telemetry.addData("Jeff > ", jeffcur);
+            telemetry.addData("Dave > ", davecur);
+
 
             RTtrigger2 = gamepad2.right_trigger;
             LTtrigger2 = gamepad2.left_trigger;
@@ -129,7 +152,7 @@ public class RobotUmmdrive_Iterative extends OpMode {
 //                    motor3.setPower(-0.7);
 //            }
 //
-//            if(gamepad1.right_stick_y == 1) {
+//            if(gamepad1.right_stick   _y == 1) {
 //
 //                motor0.setPower(0.7);
 //                motor1.setPower(0.7);
@@ -147,6 +170,12 @@ public class RobotUmmdrive_Iterative extends OpMode {
 //            }
 //
 //
+
+            daveyes = davecur - daveprev;
+            daveprev = davecur;
+
+            jeffyes = jeffcur - jeffprev;
+            jeffprev = jeffcur;
 
         }
             double left;
