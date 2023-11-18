@@ -16,12 +16,14 @@ public class RobotUmmdrive_Iterative extends OpMode {
     public Servo Servo1;
     public Servo Servo2;
     public Servo Servo3;
+    public Servo Servo4;
 
     float RTtrigger;
     float LTtrigger;
     float LTtrigger2;
     float RTtrigger2;
     boolean Abutton;
+    boolean Xbutton;
 
     double daveprev = 0;
     double davecur = 0;
@@ -46,6 +48,7 @@ public class RobotUmmdrive_Iterative extends OpMode {
         Servo1 = hardwareMap.get(Servo.class, "Servo1"); //arm release
         Servo2 = hardwareMap.get(Servo.class, "Servo2"); //back door
         Servo3 = hardwareMap.get(Servo.class, "Servo3"); //front door
+        Servo4 = hardwareMap.get(Servo.class, "Servo4");
 
         Dave = hardwareMap.get(DcMotor.class, "Dave");
         Jeff = hardwareMap.get(DcMotor.class, "Jeff");
@@ -55,8 +58,13 @@ public class RobotUmmdrive_Iterative extends OpMode {
         LTtrigger2 = gamepad2.left_trigger;
         RTtrigger2 = gamepad2.right_trigger;
         Abutton = gamepad2.a;
+        Xbutton = gamepad2.x;
 
-        Servo2.setPosition(0.5);
+        Servo1.setPosition(0);
+        Servo2.setPosition(0.3);
+        Servo3.setPosition(0);
+        Servo4.setPosition(1);
+
 
     }
 
@@ -76,12 +84,19 @@ public class RobotUmmdrive_Iterative extends OpMode {
             RTtrigger2 = gamepad2.right_trigger;
             LTtrigger2 = gamepad2.left_trigger;
             Abutton = gamepad2.a;
+            Xbutton = gamepad2.x;
 
             telemetry.addData("Abutton > ", Abutton);
             if (Abutton) {
                 Servo1.setPosition(0.75);
             } else {
                 Servo1.setPosition(0);
+            }
+            telemetry.addData("Xbutton > ", Xbutton);
+            if (Xbutton) {
+                Servo4.setPosition(0);
+            } else {
+                Servo4.setPosition(1);
             }
             telemetry.addData("RTrigger > ", LTtrigger2);
             if (LTtrigger2 > 0.0) {
