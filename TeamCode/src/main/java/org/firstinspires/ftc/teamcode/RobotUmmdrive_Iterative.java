@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp(name="Robot: Ummdrive", group="drive")
 public class RobotUmmdrive_Iterative extends OpMode {
@@ -36,6 +40,8 @@ public class RobotUmmdrive_Iterative extends OpMode {
 
     public DcMotor Dave = null;
     public DcMotor Jeff = null;
+    IMU imu = null;
+    double rotcur = 0;
     @Override
     public void init() {
 
@@ -49,9 +55,14 @@ public class RobotUmmdrive_Iterative extends OpMode {
         Servo2 = hardwareMap.get(Servo.class, "Servo2"); //back door
         Servo3 = hardwareMap.get(Servo.class, "Servo3"); //front door
         Servo4 = hardwareMap.get(Servo.class, "Servo4");
+        imu = hardwareMap.get(IMU.class, "imu");
 
         Dave = hardwareMap.get(DcMotor.class, "Dave");
         Jeff = hardwareMap.get(DcMotor.class, "Jeff");
+        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.LEFT)));
+        imu.resetYaw();
 
         RTtrigger = gamepad1.right_trigger;
         LTtrigger = gamepad1.left_trigger;
@@ -66,6 +77,7 @@ public class RobotUmmdrive_Iterative extends OpMode {
         Servo4.setPosition(1);
 
 
+
     }
 
 
@@ -75,6 +87,7 @@ public class RobotUmmdrive_Iterative extends OpMode {
         public void loop() {
             davecur = Dave.getCurrentPosition() - zerodave;
             jeffcur = Jeff.getCurrentPosition() - zerojeff;
+            rotcur = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
 
             telemetry.addData("Jeff > ", jeffcur);
@@ -117,11 +130,29 @@ public class RobotUmmdrive_Iterative extends OpMode {
             double rxSped = 0.5;
             boolean self_hang = gamepad2.y;
             boolean self_destruct = gamepad2.b;
+
+
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+
             motor0.setPower((-y - x - rx * rxSped) / denominator * sped);
             motor1.setPower((y - x - rx * rxSped) / denominator * sped);
             motor2.setPower((-y + x - rx * rxSped) / denominator * sped);
             motor3.setPower((y + x - rx * rxSped) / denominator * sped);
+
+
+
+            /*
+            double x_rot = x * Math.cos(rotcur*3.14/180) - y * Math.sin(rotcur*3.14/180);
+            double y_rot = x * Math.sin(rotcur*3.14/180) + y * Math.cos(rotcur*3.14/180);
+
+            double denominator = Math.max(Math.abs(y_rot) + Math.abs(x_rot) + Math.abs(rx), 1);
+            motor0.setPower((-y_rot + x_rot - rx) / denominator * sped);
+            motor1.setPower((y_rot + x_rot - rx) / denominator * sped);
+            motor2.setPower((-y_rot - x_rot - rx) / denominator * sped);
+            motor3.setPower((y_rot - x_rot - rx) / denominator * sped);
+
+             */
+
 
             if (self_hang) {
                 motor4.setPower(1);
