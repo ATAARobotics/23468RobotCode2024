@@ -22,8 +22,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
-@Autonomous(name = "Autonomous-Red-Back", group = "Concept")
-public class monkey_Autonomous_Red_Back extends LinearOpMode {
+@Autonomous(name = "Autonomous-Blue-Front", group = "Concept")
+public class monkey_Autonomous_Blue_Front extends LinearOpMode {
     Servo Servo0;
     DcMotor motor0;
     DcMotor motor1;
@@ -203,6 +203,7 @@ public class monkey_Autonomous_Red_Back extends LinearOpMode {
 
             int TOLERANCE = 40;
 
+            // Wildly speculate distance across the field // left-right (y) & rotation negative of red
             if (state==0) {
                 redmonke = tfod.getRecognitions().size() > 0;
                 if (redmonke) {
@@ -224,10 +225,16 @@ public class monkey_Autonomous_Red_Back extends LinearOpMode {
                     //wait(500); //TODO: test if waiting for the drop works as expexted
                 }
 
-            }else if (state == 2){ // park first check
-                pos_x = -8500;
-                pos_y = -7500;
-                
+            }else if (state == 2){ // go around placed pixel
+                pos_x = 0;
+                pos_y = -9000;
+
+                jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
+                if (jeff_close) {
+                    zerojeff = Zero_Jeff();
+                    pos_y = 0;
+                    state = 12;
+                }
 
             } else if (state == 3) { // get off the wall
                 pos_x = 1000;
@@ -292,12 +299,10 @@ public class monkey_Autonomous_Red_Back extends LinearOpMode {
                     zerodave = Zero_Dave();
                     pos_x = 0;
 
-                    //wait(500); //TODO: test if waiting for the drop works as expexted
-
                 }
 
 
-            }else if (state == 9){ // park
+            }else if (state == 9){ // move 2nd check drop
                 pos_x = 7500;
                 dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
                 if(dave_close) {
@@ -308,14 +313,65 @@ public class monkey_Autonomous_Red_Back extends LinearOpMode {
                     //wait(500); //TODO: test if waiting for the drop works as expexted
                 }
 
-            } else if (state == 10) { // park final
-                pos_x = -5300; //TODO: check park distance
-                pos_y = 8500;
+            } else if (state == 10) { // left and around
+                pos_y = -8500;
+                
+                jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
+                if (jeff_close) {
+                    zerojeff = Zero_Jeff();
+                    pos_y = 0;
+                    state = 15;
+                }
 
-            } else if (state == 11) { // park from 2nd check
-                pos_x = -7500;
-                pos_y = -4800; // already a bit right
+            } else if (state == 11) { // move left from second check
+                pos_x = 0;
+                pos_y = -5800;
 
+                jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
+                if (jeff_close) {
+                    zerojeff = Zero_Jeff();
+                    pos_y = 0;
+                    state = 16;
+                }
+ 
+            } else if (state == 12) { // drive to center
+                pos_x = 9000;
+
+                dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
+                if(dave_close) {
+                    zerodave = Zero_Dave();
+                    state = 13;
+
+                }
+            } else if (state == 13) {
+                rot = 90;
+                if (rot - 1.5 < rotcur && rotcur < rot + 1.5) {
+                    zerodave = Zero_Dave();
+                    zerojeff = Zero_Jeff();
+                    imu.resetYaw();
+                    pos_x = 0;
+                    pos_y = 0;
+                    rot = 0;
+
+                    state = 14;
+                }
+            } else if (state == 14) {
+                sped = 0.5; // speed up for the cross
+                pos_x = 47000; //9500 (1 tile estimate) x 5 - 500 for tolerance
+
+            } else if (state == 15) { // park straight across
+                sped = 0.5; // speed up for the cross
+                pos_x = 38000; //9500 (1 tile estimate) x 4
+                
+            } else if (state == 16) { // further forward from 2nd drop
+                pos_x = 10000;
+
+                dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
+                if(dave_close) {
+                    zerodave = Zero_Dave();
+                    state = 13;
+
+                }
             }
 
 
