@@ -91,9 +91,9 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
         tfod = new TfodProcessor.Builder()
                 // Use setModelAssetName() if the TF Model is built in as an asset.
                 // Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-                .setModelAssetName("model_20231028_113246.tflite")
+                .setModelAssetName("model_20231028_113257.tflite")
                 //.setModelFileName()
-                .setModelLabels(new String[] {"redmonke"})
+                .setModelLabels(new String[] {"bluemonke"})
                 //.setIsModelTensorFlow2(true)
                 //.setIsModelQuantized(true)
                 //.setModelInputSize(300)

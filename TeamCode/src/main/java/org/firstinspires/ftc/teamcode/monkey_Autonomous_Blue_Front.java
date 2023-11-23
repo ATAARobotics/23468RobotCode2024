@@ -91,9 +91,9 @@ public class monkey_Autonomous_Blue_Front extends LinearOpMode {
         tfod = new TfodProcessor.Builder()
                 // Use setModelAssetName() if the TF Model is built in as an asset.
                 // Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-                .setModelAssetName("model_20231028_113246.tflite")
+                .setModelAssetName("model_20231028_113257.tflite")
                 //.setModelFileName()
-                .setModelLabels(new String[] {"redmonke"})
+                .setModelLabels(new String[] {"bluemonke"})
                 //.setIsModelTensorFlow2(true)
                 //.setIsModelQuantized(true)
                 //.setModelInputSize(300)
@@ -362,7 +362,7 @@ public class monkey_Autonomous_Blue_Front extends LinearOpMode {
             } else if (state == 15) { // park straight across
                 sped = 0.5; // speed up for the cross
                 pos_x = 38000; //9500 (1 tile estimate) x 4
-                
+
             } else if (state == 16) { // further forward from 2nd drop
                 pos_x = 10000;
 
