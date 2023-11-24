@@ -205,15 +205,20 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
 
             // Jeff (y) (L - R) distances negative of Red Back
             if (state==0) {
-                redmonke = tfod.getRecognitions().size() > 0;
-                if (redmonke) {
-                    state = 1;
-                }else {
-                    state = 3;
+                if (tfod.getRecognitions().size() > 0) {
+                    redmonke = true;
+                }
+
+                if (getRuntime() > 1) {
+                    if (redmonke) {
+                        state = 1;
+                    } else {
+                        state = 3;
+                    }
                 }
 
             }else if (state == 1) { //drive forward
-                pos_x = 9500;
+                pos_x = 9300;
                 pos_y = 0;
                 dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
                 if (dave_close) { //stop and go to dump
@@ -222,15 +227,18 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
                     pos_x = 0;
                     Servo0.setPosition(0.0);// dump pixel
 
-                    //wait(500); //TODO: test if waiting for the drop works as expexted
                 }
 
             }else if (state == 2){ // park first check
                 pos_x = -8500;
-                pos_y = 7500;
-                
+                pos_y = 16000;
 
-            } else if (state == 3) { // get off the wall
+                if (getRuntime() >= 25) {
+                    state = 99;
+                }
+
+            }
+            else if (state == 3) { // get off the wall
                 pos_x = 1000;
                 pos_y = 0;
 
@@ -244,21 +252,37 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
 
             } else if (state == 4){ // move to side
                 pos_x = 0;
-                pos_y = 3200;
+                pos_y = 3000;
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
-                if (jeff_close) {
+                if (jeff_close || getRuntime() >= 15.0) {
+                    //Servo0.setPosition(0.0);
                     zerojeff = Zero_Jeff();
                     pos_y = 0;
                     state = 5;
                 }
             }else if (state == 5){ // 2nd check
-                redmonke = tfod.getRecognitions().size() > 0;
-                if (redmonke) {
-                    state = 9;
-                } else {
-                    state = 6;
+                if (tfod.getRecognitions().size() > 0) {
+                    redmonke = true;
+                }
+
+                if (getRuntime() > 6) {
+                    if (redmonke) {
+                        state = 9;
+                    } else {
+                        state = 6;
+                    }
                 }
             }else if (state == 6){ // dive to line
+                pos_x = 0;
+                pos_y = 13000;
+                jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
+                if (jeff_close || getRuntime() >= 15.0) {
+                    Servo0.setPosition(0.0);
+                    zerojeff = Zero_Jeff();
+                    pos_y = 0;
+                    state = 99;
+                }
+                /*
                 pos_x = 8500;
                 pos_y = 0;
 
@@ -269,10 +293,12 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
                     pos_x = 0;
                     state = 7;
                 }
+
+                 */
             }else if (state == 7){ // rotate
                 pos_x = 0;
                 pos_y = 0;
-                rot = -90; // negative 90 opposite of red side
+                rot = 90;
                 if (rot - 1.5 < rotcur && rotcur < rot + 1.5) {
                     zerodave = Zero_Dave();
                     zerojeff = Zero_Jeff();
@@ -293,20 +319,19 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
                     zerodave = Zero_Dave();
                     pos_x = 0;
 
-                    //wait(500); //TODO: test if waiting for the drop works as expexted
-
                 }
 
 
-            }else if (state == 9){ // park
-                pos_x = 7500;
+            }else if (state == 9){ // second check true
+                pos_x = 5500;
+                pos_y = -1000;
+                jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
                 dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
-                if(dave_close) {
+                if(dave_close && jeff_close) {
                     zerodave = Zero_Dave();
+                    zerojeff = Zero_Jeff();
                     Servo0.setPosition(0.0);
                     state = 11;
-
-                    //wait(500); //TODO: test if waiting for the drop works as expexted
                 }
 
             } else if (state == 10) { // park final
@@ -315,8 +340,15 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
 
             } else if (state == 11) { // park from 2nd check
                 pos_x = -7500;
-                pos_y = 4800; // already a bit left
+                pos_y = 12000; // already a bit right
 
+                if (getRuntime() >= 30) {
+                    state = 99;
+                }
+
+            } else {
+                sped = 0;
+                Servo0.setPosition(0.0);
             }
 
 
