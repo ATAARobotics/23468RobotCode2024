@@ -40,6 +40,7 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
 
 
     double sped = 0.3;
+    double curr_speed;
     double max_acc = 0.1;
     double daveprev = 0;
     double davecur = 0;
@@ -75,7 +76,7 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
 
 
 
-    int state=0;
+    String state = "monkey check from start";
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -139,23 +140,26 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
         }
 
         waitForStart();
-
+        double init_time = getRuntime();
 
         while (opModeIsActive()) {
             start_time = getRuntime();
             telemetry.addData("State > ", state);
 
-            y_change = prev_jeff_distance_left - jeff_distance_left;
-            x_change = prev_dave_distance_left - dave_distance_left;
+            //y_change = prev_jeff_distance_left - jeff_distance_left;
+            //x_change = prev_dave_distance_left - dave_distance_left;
 
+            // offset dave & jeff based on starting position and any rotation
             rotcur = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             davecur = Dave.getCurrentPosition() - zerodave - rotcur * 3.14/180 * 2500;
             jeffcur = Jeff.getCurrentPosition() - zerojeff - rotcur * 3.14/180 * 140;
 
             telemetry.addData("Rotcur",rotcur);
 
-            daveyes = davecur - daveprev; // change
+            daveyes = davecur - daveprev;
             jeffyes = jeffcur - jeffprev;
+
+            // list of most recent position change (equals 0 after stopping for some time)
             for (int i = 1; i < jeffyes_buff.length; i++) {
                 jeffyes_buff[i] = jeffyes_buff[i-1];
             }
@@ -169,18 +173,21 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
             daveyes *= 1; // offset due to build angle
             jeffyes *= 0.9;
 
+            // calculate distance remaining
             dave_distance_left = pos_x - davecur;
-            dave_i += dave_distance_left * loop_time;
+            //dave_i += dave_distance_left * loop_time;
             jeff_distance_left = pos_y - jeffcur;
-            jeff_i += jeff_distance_left * loop_time;
+            //jeff_i += jeff_distance_left * loop_time;
             rot_left = rot - rotcur;
-            rot_i += rot_left * loop_time;
+            //rot_i += rot_left * loop_time;
 
+            // positional control, get power from remaining distance
             double y = 0.0025*(dave_distance_left);// - 0.0025 * dave_i;
             double x = 0.0025*(jeff_distance_left);// - 0.0001 * jeff_i;
             double rx = -0.075 * rot_left;// + 0.007 * rot_i;
 
             /*
+            // field centric (comment out either this or robot centric)
             double x_rot = x * Math.cos(rotcur*3.14/180) - y * Math.sin(rotcur*3.14/180);
             double y_rot = x * Math.sin(rotcur*3.14/180) + y * Math.cos(rotcur*3.14/180);
 
@@ -192,24 +199,202 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
 
              */
 
+            // accelerate until speed is reached otherwise set speed
+            if (curr_speed < sped) {
+                curr_speed += 0.01;
+            } else {
+                curr_speed = sped;
+            }
+
+            // motor power, robot centric
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            motor0.setPower((-y + x - rx) / denominator * sped);
-            motor1.setPower((y + x - rx) / denominator * sped);
-            motor2.setPower((-y - x - rx) / denominator * sped);
-            motor3.setPower((y - x - rx) / denominator * sped);
+            motor0.setPower((-y + x - rx) / denominator * curr_speed);
+            motor1.setPower((y + x - rx) / denominator * curr_speed);
+            motor2.setPower((-y - x - rx) / denominator * curr_speed);
+            motor3.setPower((y - x - rx) / denominator * curr_speed);
 
             telemetry.addData("Jeff > ", jeffcur);
             telemetry.addData("Dave > ", davecur);
 
             int TOLERANCE = 40;
 
-            // Wildly speculate distance across the field
+            // State machine moved to switch-case and string compare
+            switch (state) {
+                case "monkey check from start":
+                    if (tfod.getRecognitions().size() > 0) {
+                        redmonke = true;
+                    }
+
+                    if (getRuntime()-init_time > 3) {
+                        if (redmonke) {
+                            state = "center monkey found";
+                        } else {
+                            state = "center monkey not found";
+                        }
+                    }
+
+                    break;
+                case "center monkey found":
+                    pos_x = 9300;
+                    pos_y = 0;
+                    dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
+                    if (dave_close) { //stop and go to dump
+                        state = "park from center line";
+                        zerodave = Zero_Dave();
+                        pos_x = 0;
+                        Servo0.setPosition(0.0);// dump pixel
+
+                    }
+
+                    break;
+                case "center monkey not found": // get off wall
+                    pos_x = 1000;
+                    pos_y = 0;
+
+                    //telemetry.addData("dave buff", Arrays.stream(daveyes_buff).sum());
+                    dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
+                    if (dave_close) {
+                        zerodave = Zero_Dave();
+                        pos_x = 0;
+                        state = "move for second check";
+                    }
+
+                    break;
+                case "move for second check":
+                    pos_x = 0;
+                    pos_y = 3000;
+                    jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
+                    if (jeff_close || getRuntime()-init_time >= 15.0) {
+                        //Servo0.setPosition(0.0);
+                        zerojeff = Zero_Jeff();
+                        pos_y = 0;
+                        state = "second check";
+                    }
+
+                case "park from center line":
+                    pos_x = -8300;
+                    pos_y = 5000;
+
+                    jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
+                    dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
+                    if(dave_close && jeff_close) {
+                        zerodave = Zero_Dave();
+                        zerojeff = Zero_Jeff();
+                        state = "forward from universal corner"; // park
+                    }
+
+                    break;
+                case "second check":
+                    if (tfod.getRecognitions().size() > 0) {
+                        redmonke = true;
+                    }
+
+                    if (getRuntime()-init_time > 8) {
+                        if (redmonke) {
+                            state = "second monkey found";
+                        } else {
+                            state = "second monkey not found";
+                        }
+                    }
+
+                    break;
+                case "second monkey found":
+                    pos_x = 5500;
+                    pos_y = -1000;
+                    jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
+                    dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
+                    if(dave_close && jeff_close) {
+                        zerodave = Zero_Dave();
+                        zerojeff = Zero_Jeff();
+                        Servo0.setPosition(0.0);
+                        state = "park from second monkey";
+                    }
+
+                    break;
+                case "second monkey not found":
+                    pos_x = 0;
+                    pos_y = 2000;
+                    jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
+                    if (jeff_close) {
+                        zerojeff = Zero_Jeff();
+                        pos_y = 0;
+                        state = "forward from universal corner"; // skip 3rd monkey default for now
+                        sped = 0.1;
+                    }
+
+                    break;
+                case "park from second monkey":
+                    pos_x = -4500;
+                    pos_y = 4000; // already a bit right
+
+                    jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
+                    dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
+                    if(dave_close && jeff_close) {
+                        zerodave = Zero_Dave();
+                        zerojeff = Zero_Jeff();
+                        Servo0.setPosition(0.0);
+                        state = "forward from universal corner";
+                        sped = 0.1;
+                    }
+
+                    break;
+                case "forward from universal corner":
+                    sped = 0.3;
+
+                    pos_x = 16000;
+                    dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
+                    if(dave_close) {
+                        zerodave = Zero_Dave();
+                        state = "cross field";
+
+                    }
+
+                    break;
+                    case "cross field":
+                        sped = 0.6;
+                        //sped = 0.5; // speed up for the cross
+                        pos_y = -36000; //9500 (1 tile estimate) x 5 - 500 for tolerance
+
+                        jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
+                        if (jeff_close) {
+                            zerojeff = Zero_Jeff();
+                            pos_y = 0;
+                            state = "force into corner";
+                        }
+
+                        break;
+                case "force into corner":
+                    sped = 0.2;
+                    //sped = 0.5; // speed up for the cross
+                    pos_x = -5000; //9500 (1 tile estimate) x 4
+                    pos_y = -8000;
+
+                    jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
+                    dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
+                    if(getRuntime()-init_time > 28) {
+                        zerodave = Zero_Dave();
+                        zerojeff = Zero_Jeff();
+                        Servo0.setPosition(0.0);
+                        state = "default";
+
+                    }
+
+                    break;
+                default:
+                    sped = 0;
+                    Servo0.setPosition(0.0);
+
+
+
+            }
+
+            /*
             if (state==0) {
                 if (tfod.getRecognitions().size() > 0) {
                     redmonke = true;
                 }
 
-                if (getRuntime() > 1) {
+                if (getRuntime()-init_time > 3) {
                     if (redmonke) {
                         state = 1;
                     } else {
@@ -231,7 +416,7 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
 
             }else if (state == 2){ // park first check
                 pos_x = -8300;
-                pos_y = 9000;
+                pos_y = 5000;
 
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
                 dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
@@ -258,7 +443,7 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
                 pos_x = 0;
                 pos_y = 3000;
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
-                if (jeff_close || getRuntime() >= 15.0) {
+                if (jeff_close || getRuntime()-init_time >= 15.0) {
                     //Servo0.setPosition(0.0);
                     zerojeff = Zero_Jeff();
                     pos_y = 0;
@@ -269,7 +454,7 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
                     redmonke = true;
                 }
 
-                if (getRuntime() > 6) {
+                if (getRuntime()-init_time > 8) {
                     if (redmonke) {
                         state = 9;
                     } else {
@@ -278,26 +463,28 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
                 }
             }else if (state == 6){ // dive to line
                 pos_x = 0;
-                pos_y = 6000;
+                pos_y = 2000;
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
-                if (jeff_close || getRuntime() >= 15.0) {
+                if (jeff_close) {
                     zerojeff = Zero_Jeff();
                     pos_y = 0;
                     state = 13;
-                }
-                /*
-                pos_x = 8500;
-                pos_y = 0;
-
-                //telemetry.addData("dave buff", Arrays.stream(daveyes_buff).sum());
-                dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
-                if (dave_close) {
-                    zerodave = Zero_Dave();
-                    pos_x = 0;
-                    state = 7;
+                    sped = 0.1;
                 }
 
-                 */
+
+//                pos_x = 8500;
+//                pos_y = 0;
+//
+//                //telemetry.addData("dave buff", Arrays.stream(daveyes_buff).sum());
+//                dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
+//                if (dave_close) {
+//                    zerodave = Zero_Dave();
+//                    pos_x = 0;
+//                    state = 7;
+//                }
+
+
             } else if (state == 7){ // rotate
                 pos_x = 0;
                 pos_y = 0;
@@ -348,7 +535,7 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
 
             } else if (state == 11) { // park from 2nd check
                 pos_x = -4500;
-                pos_y = 7000; // already a bit right
+                pos_y = 4000; // already a bit right
 
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
                 dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
@@ -357,19 +544,24 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
                     zerojeff = Zero_Jeff();
                     Servo0.setPosition(0.0);
                     state = 13;
+                    sped = 0.1;
                 }
 
             } else if (state == 12) { // drive to center
-                pos_x = 9000;
+                pos_x = 7500;
 
                 dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
                 if(dave_close) {
                     zerodave = Zero_Dave();
                     state = 13;
-
+                    sped = 0.1;
                 }
             } else if (state == 13) {
-                pos_x = 14000;
+                if (sped < 0.3) {
+                    sped += 0.01;
+                }
+
+                pos_x = 16000;
                 dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
                 if(dave_close) {
                     zerodave = Zero_Dave();
@@ -377,20 +569,35 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
 
                 }
             } else if (state == 14) {
-                sped = 0.5; // speed up for the cross
-                pos_y = -38000; //9500 (1 tile estimate) x 5 - 500 for tolerance
+                if (sped < 0.6) {
+                    sped += 0.01;
+                }
+                //sped = 0.5; // speed up for the cross
+                pos_y = -36000; //9500 (1 tile estimate) x 5 - 500 for tolerance
 
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
                 if (jeff_close) {
                     zerojeff = Zero_Jeff();
                     pos_y = 0;
-                    state = 99;
+                    state = 15;
                 }
 
-            } else if (state == 15) { // park straight across
-                sped = 0.5; // speed up for the cross
-                pos_x = 38000; //9500 (1 tile estimate) x 4
-                
+            } else if (state == 15) { // force into corner
+                sped = 0.2;
+                //sped = 0.5; // speed up for the cross
+                pos_x = -5000; //9500 (1 tile estimate) x 4
+                pos_y = -8000;
+
+                jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
+                dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
+                if(getRuntime()-init_time > 28) {
+                    zerodave = Zero_Dave();
+                    zerojeff = Zero_Jeff();
+                    Servo0.setPosition(0.0);
+                    state = 99;
+
+                }
+
             } else if (state == 16) { // further forward from 2nd drop
                 pos_x = 10000;
 
@@ -404,6 +611,7 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
                 sped = 0;
                 Servo0.setPosition(0.0);
             }
+        */
 
 
 
@@ -433,5 +641,13 @@ public class monkey_Autonomous_Red_Front extends LinearOpMode {
     double Zero_Jeff() {
         pos_y = 0;
         return Jeff.getCurrentPosition();// + rotcur * 3.14/180 * 400;
+    }
+
+    void set_field_position(double change_x, double change_y, double speed, double acceleration) {
+
+    }
+
+    void set_field_position(double x, double y, double speed) {
+
     }
 }

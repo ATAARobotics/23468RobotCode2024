@@ -140,6 +140,7 @@ public class monkey_Autonomous_Blue_Front extends LinearOpMode {
 
         waitForStart();
 
+        double init_time = getRuntime();
 
         while (opModeIsActive()) {
             start_time = getRuntime();
@@ -208,8 +209,8 @@ public class monkey_Autonomous_Blue_Front extends LinearOpMode {
                 if (tfod.getRecognitions().size() > 0) {
                     redmonke = true;
                 }
-
-                if (getRuntime() > 1) {
+                redmonke = false;
+                if (getRuntime()-init_time > 3) {
                     if (redmonke) {
                         state = 1;
                     } else {
@@ -231,7 +232,7 @@ public class monkey_Autonomous_Blue_Front extends LinearOpMode {
 
             }else if (state == 2){ // park first check
                 pos_x = -8300;
-                pos_y = -9000;
+                pos_y = -5500;
 
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
                 dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
@@ -258,7 +259,7 @@ public class monkey_Autonomous_Blue_Front extends LinearOpMode {
                 pos_x = 0;
                 pos_y = -3000;
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
-                if (jeff_close || getRuntime() >= 15.0) {
+                if (jeff_close || getRuntime()-init_time >= 15.0) {
                     //Servo0.setPosition(0.0);
                     zerojeff = Zero_Jeff();
                     pos_y = 0;
@@ -269,7 +270,7 @@ public class monkey_Autonomous_Blue_Front extends LinearOpMode {
                     redmonke = true;
                 }
 
-                if (getRuntime() > 6) {
+                if (getRuntime()-init_time > 8) {
                     if (redmonke) {
                         state = 9;
                     } else {
@@ -278,12 +279,13 @@ public class monkey_Autonomous_Blue_Front extends LinearOpMode {
                 }
             }else if (state == 6){ // dive to line
                 pos_x = 0;
-                pos_y = -6000;
+                pos_y = -2000;
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
-                if (jeff_close || getRuntime() >= 15.0) {
+                if (jeff_close) {
                     zerojeff = Zero_Jeff();
                     pos_y = 0;
                     state = 13;
+                    sped = 0.1;
                 }
                 /*
                 pos_x = 8500;
@@ -348,7 +350,7 @@ public class monkey_Autonomous_Blue_Front extends LinearOpMode {
 
             } else if (state == 11) { // park from 2nd check
                 pos_x = -4500;
-                pos_y = -7000; // already a bit right
+                pos_y = -4000; // already a bit right
 
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
                 dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
@@ -357,19 +359,24 @@ public class monkey_Autonomous_Blue_Front extends LinearOpMode {
                     zerojeff = Zero_Jeff();
                     Servo0.setPosition(0.0);
                     state = 13;
+                    sped = 0.1;
                 }
 
             } else if (state == 12) { // drive to center
-                pos_x = 9000;
+                pos_x = 7500;
 
                 dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
                 if(dave_close) {
                     zerodave = Zero_Dave();
                     state = 13;
-
+                    sped = 0.1;
                 }
             } else if (state == 13) {
-                pos_x = 14000;
+                if (sped < 0.3) {
+                    sped += 0.01;
+                }
+
+                pos_x = 16000;
                 dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
                 if(dave_close) {
                     zerodave = Zero_Dave();
@@ -377,19 +384,34 @@ public class monkey_Autonomous_Blue_Front extends LinearOpMode {
 
                 }
             } else if (state == 14) {
-                sped = 0.5; // speed up for the cross
-                pos_y = 38000; //9500 (1 tile estimate) x 5 - 500 for tolerance
+                if (sped < 0.6) {
+                    sped += 0.01;
+                }
+                //sped = 0.5; // speed up for the cross
+                pos_y = 36000; //9500 (1 tile estimate) x 5 - 500 for tolerance
 
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
                 if (jeff_close) {
                     zerojeff = Zero_Jeff();
                     pos_y = 0;
-                    state = 99;
+                    state = 15;
                 }
 
-            } else if (state == 15) { // park straight across
-                sped = 0.5; // speed up for the cross
-                pos_x = 38000; //9500 (1 tile estimate) x 4
+            } else if (state == 15) { // force into corner
+                sped = 0.2;
+                //sped = 0.5; // speed up for the cross
+                pos_x = -5000; //9500 (1 tile estimate) x 4
+                pos_y = 8000;
+
+                jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
+                dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
+                if(getRuntime()-init_time > 28) {
+                    zerodave = Zero_Dave();
+                    zerojeff = Zero_Jeff();
+                    Servo0.setPosition(0.0);
+                    state = 99;
+
+                }
 
             } else if (state == 16) { // further forward from 2nd drop
                 pos_x = 10000;

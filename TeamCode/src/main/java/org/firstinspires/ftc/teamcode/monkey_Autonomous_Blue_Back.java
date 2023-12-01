@@ -140,6 +140,7 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
 
         waitForStart();
 
+        double init_time = getRuntime();
 
         while (opModeIsActive()) {
             start_time = getRuntime();
@@ -209,7 +210,8 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
                     redmonke = true;
                 }
 
-                if (getRuntime() > 1) {
+
+                if (getRuntime()-init_time > 3) {
                     if (redmonke) {
                         state = 1;
                     } else {
@@ -233,7 +235,7 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
                 pos_x = -8500;
                 pos_y = 16000;
 
-                if (getRuntime() >= 25) {
+                if (getRuntime()-init_time >= 20) {
                     state = 99;
                 }
 
@@ -254,7 +256,7 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
                 pos_x = 0;
                 pos_y = 3000;
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
-                if (jeff_close || getRuntime() >= 15.0) {
+                if (jeff_close || getRuntime()-init_time >= 15.0) {
                     //Servo0.setPosition(0.0);
                     zerojeff = Zero_Jeff();
                     pos_y = 0;
@@ -265,7 +267,7 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
                     redmonke = true;
                 }
 
-                if (getRuntime() > 6) {
+                if (getRuntime()-init_time > 8) {
                     if (redmonke) {
                         state = 9;
                     } else {
@@ -276,7 +278,7 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
                 pos_x = 0;
                 pos_y = 13000;
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
-                if (jeff_close || getRuntime() >= 15.0) {
+                if (jeff_close || getRuntime()-init_time >= 15.0) {
                     Servo0.setPosition(0.0);
                     zerojeff = Zero_Jeff();
                     pos_y = 0;
@@ -335,14 +337,14 @@ public class monkey_Autonomous_Blue_Back extends LinearOpMode {
                 }
 
             } else if (state == 10) { // park final
-                pos_x = -5300; //TODO: check park distance
+                pos_x = -5300;
                 pos_y = -8500;
 
             } else if (state == 11) { // park from 2nd check
                 pos_x = -7500;
-                pos_y = 12000; // already a bit right
+                pos_y = 9000; // already a bit right
 
-                if (getRuntime() >= 30) {
+                if (getRuntime()-init_time >= 30) {
                     state = 99;
                 }
 
