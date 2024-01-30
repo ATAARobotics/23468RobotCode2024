@@ -181,6 +181,19 @@ public class CraigDrive extends LinearOpMode {
     }
 
     public void actionCompleteCommanderReadyForNextCommand() {
+        motor0_br.resetEncoder();
+        motor1_bl.resetEncoder();
+        motor2_fr.resetEncoder();
+        motor3_fl.resetEncoder();
+        resetMotors();
+        currPower = 0.0;
+        targetPower = 0.0;
+        zeroDave_fb = Dave_fb.getCurrentPosition();
+        zeroJeff_lr = Jeff_lr.getCurrentPosition();
+        targetDistance_fb = 0;
+        targetDistance_lr = 0;
+        //maintain target heading
+
         if (currBlock != null)  {
             currAction = currBlock.autoActionQueue.poll();
         }
@@ -188,19 +201,6 @@ public class CraigDrive extends LinearOpMode {
         if(currAction == null && nextStateToLoad != null) {
             nextBlockOfActionsIs();
         }
-
-        resetMotors();
-        currPower = 0.0;
-        targetPower = 0.0;
-        motor0_br.resetEncoder();
-        motor1_bl.resetEncoder();
-        motor2_fr.resetEncoder();
-        motor3_fl.resetEncoder();
-        zeroDave_fb = Dave_fb.getCurrentPosition();
-        zeroJeff_lr = Jeff_lr.getCurrentPosition();
-        targetDistance_fb = 0;
-        targetDistance_lr = 0;
-        //maintain target heading
 
     }
 
@@ -224,18 +224,6 @@ public class CraigDrive extends LinearOpMode {
     }
 
     public void theBIGSlap(){
-        resetMotors();
-        currPower = 0.0;
-        targetPower = 0.0;
-        motor0_br.resetEncoder();
-        motor1_bl.resetEncoder();
-        motor2_fr.resetEncoder();
-        motor3_fl.resetEncoder();
-        zeroDave_fb = Dave_fb.getCurrentPosition();
-        zeroJeff_lr = Jeff_lr.getCurrentPosition();
-        targetDistance_fb = 0;
-        targetDistance_lr = 0;
-
         leftArm.setPosition(0.8);
         sleep(300);
         leftClaw.setPosition(0.0);
@@ -245,13 +233,13 @@ public class CraigDrive extends LinearOpMode {
     }
 
     public void wait(int timeToWait){
-        resetMotors();
-        currPower = 0.0;
-        targetPower = 0.0;
         motor0_br.resetEncoder();
         motor1_bl.resetEncoder();
         motor2_fr.resetEncoder();
         motor3_fl.resetEncoder();
+        resetMotors();
+        currPower = 0.0;
+        targetPower = 0.0;
         zeroDave_fb = Dave_fb.getCurrentPosition();
         zeroJeff_lr = Jeff_lr.getCurrentPosition();
         targetDistance_fb = 0;
