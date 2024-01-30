@@ -6,6 +6,7 @@ import android.util.Size;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -21,7 +22,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
-
+@Disabled
 @Autonomous(name = "Autonomous-Red-Back", group = "Concept")
 public class monkey_Autonomous_Red_Back extends LinearOpMode {
     Servo Servo0;
@@ -234,8 +235,8 @@ public class monkey_Autonomous_Red_Back extends LinearOpMode {
                 }
 
             }else if (state == 2){ // park first check
-                pos_x = -8500;
-                pos_y = -16000;
+                pos_x = -8500-1000;
+                pos_y = -16000-5000;
 
                 if (getRuntime()-startTime >= 25) {
                     state = 99;
@@ -278,7 +279,7 @@ public class monkey_Autonomous_Red_Back extends LinearOpMode {
                 }
             }else if (state == 6){ // dive to line
                 pos_x = 0;
-                pos_y = -13000;
+                pos_y = -13000-5000;
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
                 if (jeff_close || getRuntime()-startTime >= 15.0) {
                     Servo0.setPosition(0.0);
@@ -328,7 +329,7 @@ public class monkey_Autonomous_Red_Back extends LinearOpMode {
 
             }else if (state == 9){ // second check true
                 pos_x = 5500;
-                pos_y = -1000;
+                pos_y = -1250;
                 jeff_close = Arrays.stream(jeffyes_buff).sum() <= 0.1 && pos_y - TOLERANCE < jeffcur && jeffcur < pos_y + TOLERANCE;
                 dave_close = Arrays.stream(daveyes_buff).sum() <= 0.1 && pos_x - TOLERANCE < davecur && davecur < pos_x + TOLERANCE;
                 if(dave_close && jeff_close) {

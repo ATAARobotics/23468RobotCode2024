@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import java.lang.Math;
-
 import android.util.Size;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -12,7 +10,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -20,11 +17,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
 @Disabled
-@Autonomous(name = "Autonomous-Red-Front", group = "Concept")
-public class monkey_Autonomous_Red_Front extends LinearOpMode {
+@Autonomous(name = "-AprilTag", group = "Concept")
+public class monkey_Autonomous_AprilTag extends LinearOpMode {
     Servo Servo0;
     DcMotor motor0;
     DcMotor motor1;
