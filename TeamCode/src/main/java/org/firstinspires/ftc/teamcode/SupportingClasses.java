@@ -68,6 +68,9 @@ class CraigCameraPipeline extends OpenCvPipeline
     Mat YCrCb = new Mat();
     Mat colourMat = new Mat();
     Mat regionToSample;
+    Mat regionToSampleRed;
+    Mat regionToSampleBlue;
+    Mat regionToSampleGreen;
     int avgColourOfRegion;
     boolean areWeDetectingBlue;
     int threshold;
@@ -131,18 +134,35 @@ class CraigCameraPipeline extends OpenCvPipeline
     @Override
     public Mat processFrame(Mat input)
     {
+        Core.extractChannel(input, regionToSampleRed, 0);//0 is red 1 is green
+
+        Core.extractChannel(input, regionToSampleGreen, 1);
+
+        Core.extractChannel(input, regionToSampleBlue, 2);
+
+
         //inputToCb(input);
         if (areWeDetectingBlue) {
-            Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
-            Core.extractChannel(YCrCb, colourMat, 2);//Best I found to figure out? worked great in bright conditions
+            Core.subtract(regionToSampleBlue, regionToSampleRed, regionToSampleBlue);
+            Core.subtract(regionToSampleBlue, regionToSampleGreen, regionToSampleBlue);
 
-            //Core.extractChannel(input, colourMat, 2);//worked better in dark light
+            regionToSample = regionToSampleBlue.submat(new Rect(regionToSampleTopLeftCorner,  regionToSampleTopBtmRightCorner));
+
+            avgColourOfRegion = (int) Core.mean(regionToSample).val[0];
+
+            colourMat = regionToSampleBlue;
         } else {
             Core.extractChannel(input, colourMat, 0);//0 is red 1 is green
+
+            regionToSample = colourMat.submat(new Rect(regionToSampleTopLeftCorner,  regionToSampleTopBtmRightCorner));
+
+            avgColourOfRegion = (int) Core.mean(regionToSample).val[0];
+
         }
-        Core.divide(regionToSample,new Scalar (15.0), regionToSample);
-        Core.pow(regionToSample, 2, regionToSample);
-        avgColourOfRegion = (int) Core.mean(regionToSample).val[0];
+
+        //Core.divide(regionToSample,new Scalar (15.0), regionToSample);
+        //Core.pow(regionToSample, 2, regionToSample);
+
 
         // Extra visual aids, not required
         Imgproc.putText (
