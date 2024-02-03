@@ -300,11 +300,11 @@ public class CraigDrive extends LinearOpMode {
                     // we are to the right of the tag, move left
                     targetDistance_lr = (Jeff_lr.getCurrentPosition() - zeroJeff_lr);
                     currentMotionType = CurrentMotionType.RIGHT;
-                    targetDistance_lr -= 150;
+                    targetDistance_lr -= 300;
                 } else if (detectedTag.ftcPose.bearing < -27.0) {
                     targetDistance_lr = (Jeff_lr.getCurrentPosition() - zeroJeff_lr);
                     currentMotionType = CurrentMotionType.RIGHT;
-                    targetDistance_lr += 150;
+                    targetDistance_lr += 300;
                 } else {
                     centeredOnTag = true;
                     targetDistance_lr = (Jeff_lr.getCurrentPosition() - zeroJeff_lr);
@@ -423,9 +423,12 @@ public class CraigDrive extends LinearOpMode {
 
         }
 
+        double TOLERANCE = 5;
         if ( targetHeadingLastItr == toGoHeading
-                && targetDistance_fbLastItr == distanceToTarget_fb
-                && targetDistance_lrLastItr == distanceToTarget_lr
+                && (Math.abs(distanceToTarget_fb) < TOLERANCE // close to dest
+                && Math.abs(distanceToTarget_lr) < TOLERANCE)
+                || (targetDistance_fbLastItr == distanceToTarget_fb // backup if stall
+                && targetDistance_lrLastItr == distanceToTarget_lr)
 
         ) {
             frameCountInStandstill += 1;
@@ -512,7 +515,7 @@ public class CraigDrive extends LinearOpMode {
             currPower = 0.0;
         }
 
-        if (currAction.turbo) {
+        if (currAction != null && currAction.turbo) {
             if (targetPower > currPower) {
                 currPower = currPower + 0.1;
             } else if (targetPower < currPower) {
@@ -524,6 +527,13 @@ public class CraigDrive extends LinearOpMode {
             } else if (targetPower < currPower) {
                 currPower = currPower - 0.05;
             }
+        }
+
+        if(targetPower > currPower && currentMotionType == CurrentMotionType.ROTATE) {
+            currPower = currPower + 0.05;
+        }
+        if(targetPower < currPower && currentMotionType == CurrentMotionType.ROTATE) {
+            currPower = currPower - 0.05;
         }
 
 

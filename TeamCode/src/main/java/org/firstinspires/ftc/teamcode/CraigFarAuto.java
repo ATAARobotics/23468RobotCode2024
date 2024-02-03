@@ -295,11 +295,11 @@ public class CraigFarAuto extends LinearOpMode {
                     // we are to the right of the tag, move left
                     targetDistance_lr = (Jeff_lr.getCurrentPosition() - zeroJeff_lr);
                     currentMotionType = CurrentMotionType.RIGHT;
-                    targetDistance_lr -= 150;
+                    targetDistance_lr -= 300;
                 } else if (detectedTag.ftcPose.bearing < -27.0) {
                     targetDistance_lr = (Jeff_lr.getCurrentPosition() - zeroJeff_lr);
                     currentMotionType = CurrentMotionType.RIGHT;
-                    targetDistance_lr += 150;
+                    targetDistance_lr += 300;
                 } else {
                     centeredOnTag = true;
                     targetDistance_lr = (Jeff_lr.getCurrentPosition() - zeroJeff_lr);
