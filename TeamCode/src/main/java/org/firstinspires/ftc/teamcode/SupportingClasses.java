@@ -49,15 +49,26 @@ class BlockOfActions {
         AutoAction a = new AutoAction(actionToTake, amt);
         autoActionQueue.add(a);
     }
+    public void addActionToQueue(String actionToTake, double amt, boolean turbo) {
+        AutoAction a = new AutoAction(actionToTake, amt, turbo);
+        autoActionQueue.add(a);
+    }
 }
 
 class AutoAction {
     public String actionType = "";
     public double amt = 0.0;
+    public boolean turbo = false;
 
     public AutoAction(String actionType, double amt) {
         this.actionType = actionType;
         this.amt = amt;
+        this.turbo = false;
+    }
+    public AutoAction(String actionType, double amt, boolean turbo) {
+        this.actionType = actionType;
+        this.amt = amt;
+        this.turbo = turbo;
     }
 }
 
@@ -88,8 +99,8 @@ class CraigCameraPipeline extends OpenCvPipeline
     static final Scalar GREY = new Scalar(40, 40, 40);
 
 
-    static final int bluenessThreshold = 135;
-    static final int rednessThreshold = 135 ;
+    static final int bluenessThreshold = 10;
+    static final int rednessThreshold = 10 ;
 
 
 
@@ -129,6 +140,9 @@ class CraigCameraPipeline extends OpenCvPipeline
             Core.extractChannel(firstFrame, colourMat, 0);//0 is red
         }
         regionToSample = colourMat.submat(new Rect(regionToSampleTopLeftCorner,  regionToSampleTopBtmRightCorner));
+        regionToSampleRed = colourMat.submat(new Rect(regionToSampleTopLeftCorner,  regionToSampleTopBtmRightCorner));
+        regionToSampleBlue = colourMat.submat(new Rect(regionToSampleTopLeftCorner,  regionToSampleTopBtmRightCorner));
+        regionToSampleGreen = colourMat.submat(new Rect(regionToSampleTopLeftCorner,  regionToSampleTopBtmRightCorner));
     }
 
     @Override
@@ -152,11 +166,14 @@ class CraigCameraPipeline extends OpenCvPipeline
 
             colourMat = regionToSampleBlue;
         } else {
-            Core.extractChannel(input, colourMat, 0);//0 is red 1 is green
+            Core.subtract(regionToSampleRed, regionToSampleBlue, regionToSampleRed);
+            Core.subtract(regionToSampleRed, regionToSampleGreen, regionToSampleRed);
 
-            regionToSample = colourMat.submat(new Rect(regionToSampleTopLeftCorner,  regionToSampleTopBtmRightCorner));
+            regionToSample = regionToSampleRed.submat(new Rect(regionToSampleTopLeftCorner,  regionToSampleTopBtmRightCorner));
 
             avgColourOfRegion = (int) Core.mean(regionToSample).val[0];
+
+            colourMat = regionToSampleRed;
 
         }
 
@@ -171,7 +188,7 @@ class CraigCameraPipeline extends OpenCvPipeline
                 new Point(20, 20),               // point
                 0,      // front face
                 1,                               // front scale
-                new Scalar(0, 0, 0)           // Scalar object for color
+                new Scalar(255, 255, 255)           // Scalar object for color
         );
         if (avgColourOfRegion >= threshold) {
             Imgproc.rectangle(

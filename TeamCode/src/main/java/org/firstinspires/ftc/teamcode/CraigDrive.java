@@ -512,11 +512,21 @@ public class CraigDrive extends LinearOpMode {
             currPower = 0.0;
         }
 
-        if (targetPower > currPower) {
-            currPower = currPower + 0.05;
-        } else if (targetPower < currPower) {
-            currPower = currPower - 0.04;
+        if (currAction.turbo) {
+            if (targetPower > currPower) {
+                currPower = currPower + 0.1;
+            } else if (targetPower < currPower) {
+                currPower = currPower - 0.1;
+            }
+        } else {
+            if (targetPower > currPower) {
+                currPower = currPower + 0.05;
+            } else if (targetPower < currPower) {
+                currPower = currPower - 0.05;
+            }
         }
+
+
         motor0_br.set(currPower); //set target power
         motor1_bl.set(currPower); //set target power
         motor2_fr.set(currPower); //set target power
@@ -587,19 +597,19 @@ public class CraigDrive extends LinearOpMode {
         /* PLACE AUTO COMMANDS HERE! */
 
         /* THIS DOES BACK STAGE WITH CENTER RED MONKE */
-        placePixelInCentre.addActionToQueue("driveForwardADistance", 24);
+        placePixelInCentre.addActionToQueue("driveForwardADistance", 24, true);
         placePixelInCentre.addActionToQueue("dropPixel", 0);
         placePixelInCentre.addActionToQueue("driveForwardADistance", 4);
         placePixelInCentre.addActionToQueue("driveForwardADistance", -5);
         placePixelInCentre.addActionToQueue("faceHeading", 90);
-        placePixelInCentre.addActionToQueue("driveForwardADistance", -12);
-        placePixelInCentre.addActionToQueue("driveRightADistance", 12);
+        placePixelInCentre.addActionToQueue("driveForwardADistance", -12, true);
+        placePixelInCentre.addActionToQueue("driveRightADistance", 12, true);
         placePixelInCentre.addActionToQueue("navigateToAprilTag", 5);
         placePixelInCentre.addActionToQueue("theBIGSlap", 0);
-        placePixelInCentre.addActionToQueue("driveForwardADistance", 2);
-        placePixelInCentre.addActionToQueue("driveRightADistance", -33);
+        placePixelInCentre.addActionToQueue("driveForwardADistance", 2, true);
+        placePixelInCentre.addActionToQueue("driveRightADistance", -33, true);
 
-        goToRightForCheck.addActionToQueue("driveForwardADistance", 6);
+        goToRightForCheck.addActionToQueue("driveForwardADistance", 6, true);
         goToRightForCheck.addActionToQueue("driveRightADistance", 11);
 
         placePixelOnRight.addActionToQueue("driveForwardADistance", 10);
@@ -607,16 +617,16 @@ public class CraigDrive extends LinearOpMode {
         placePixelOnRight.addActionToQueue("dropPixel", 0);
         placePixelOnRight.addActionToQueue("driveForwardADistance", 2);
         //placePixelOnRight.addActionToQueue("wait", 0.5);
-        placePixelOnRight.addActionToQueue("driveForwardADistance", -6);
+        placePixelOnRight.addActionToQueue("driveForwardADistance", -6, true);
         placePixelOnRight.addActionToQueue("faceHeading", 90);
-        placePixelOnRight.addActionToQueue("driveForwardADistance", -12);
-        placePixelOnRight.addActionToQueue("driveRightADistance", 15);
+        placePixelOnRight.addActionToQueue("driveForwardADistance", -12, true);
+        placePixelOnRight.addActionToQueue("driveRightADistance", 15, true);
         placePixelOnRight.addActionToQueue("navigateToAprilTag", 6);
         placePixelOnRight.addActionToQueue("theBIGSlap", 0);
         placePixelOnRight.addActionToQueue("driveForwardADistance", 2);
-        placePixelOnRight.addActionToQueue("driveRightADistance", -26);
+        placePixelOnRight.addActionToQueue("driveRightADistance", -26, true);
 
-        placePixelOnLeft.addActionToQueue("driveForwardADistance", 28);
+        placePixelOnLeft.addActionToQueue("driveForwardADistance", 28, true);
         placePixelOnLeft.addActionToQueue("faceHeading", 90);
         placePixelOnLeft.addActionToQueue("dropPixel", 0);
         //placePixelOnLeft.addActionToQueue("wait", 0.5);
@@ -624,7 +634,7 @@ public class CraigDrive extends LinearOpMode {
         placePixelOnLeft.addActionToQueue("navigateToAprilTag", 4);
         placePixelOnLeft.addActionToQueue("theBIGSlap", 0);
         placePixelOnLeft.addActionToQueue("driveForwardADistance", 2);
-        placePixelOnLeft.addActionToQueue("driveRightADistance", -39);
+        placePixelOnLeft.addActionToQueue("driveRightADistance", -39, true);
 
 
         testBlock.addActionToQueue("navigateToAprilTag", 5);
