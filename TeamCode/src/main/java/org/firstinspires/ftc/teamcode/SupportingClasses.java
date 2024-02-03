@@ -85,8 +85,8 @@ class CraigCameraPipeline extends OpenCvPipeline
     static final Scalar GREY = new Scalar(40, 40, 40);
 
 
-    static final int bluenessThreshold = 165;
-    static final int rednessThreshold = 100 ;
+    static final int bluenessThreshold = 135;
+    static final int rednessThreshold = 5 ;
 
 
 
@@ -140,6 +140,8 @@ class CraigCameraPipeline extends OpenCvPipeline
         } else {
             Core.extractChannel(input, colourMat, 0);//0 is red 1 is green
         }
+        Core.divide(regionToSample,new Scalar (15.0), regionToSample);
+        Core.pow(regionToSample, 2, regionToSample);
         avgColourOfRegion = (int) Core.mean(regionToSample).val[0];
 
         // Extra visual aids, not required

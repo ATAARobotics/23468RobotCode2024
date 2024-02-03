@@ -1,30 +1,18 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-import java.util.List;
 
+@Autonomous(name = "CheckFrontCameraStreamBlue", group = "Concept")
+public class CheckFrontCameraStreamBlue extends LinearOpMode {
 
-
-@Autonomous(name = "CheckFrontCameraStream", group = "Concept")
-public class CheckFrontCameraStream extends LinearOpMode {
-
-    public CraigCameraPipeline cameraPipeline = new CraigCameraPipeline(false); // -------------------------------------------------------------------CHANGE THIS TO DETECT RED/BLUE
+    public CraigCameraPipeline cameraPipeline = new CraigCameraPipeline(true); // -------------------------------------------------------------------CHANGE THIS TO DETECT RED/BLUE
 
     @Override
     public void runOpMode() throws InterruptedException {
