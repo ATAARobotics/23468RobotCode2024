@@ -585,10 +585,10 @@ public class CraigFarAuto extends LinearOpMode {
         placePixelInCentre.addActionToQueue("driveForwardADistance", 47);
         placePixelInCentre.addActionToQueue("faceHeading", 180);
         placePixelInCentre.addActionToQueue("dropPixel", 0);
-        placePixelInCentre.addActionToQueue("driveForwardADistance", -12);
+        placePixelInCentre.addActionToQueue("driveForwardADistance", -10);
         placePixelInCentre.addActionToQueue("driveRightADistance", -70);
         placePixelInCentre.addActionToQueue("faceHeading", 90);
-        placePixelInCentre.addActionToQueue("driveRightADistance", -26);
+        placePixelInCentre.addActionToQueue("driveRightADistance", -30);
         placePixelInCentre.addActionToQueue("driveForwardADistance", -12);
         placePixelInCentre.addActionToQueue("driveRightADistance", 12);
         placePixelInCentre.addActionToQueue("navigateToAprilTag", 5);

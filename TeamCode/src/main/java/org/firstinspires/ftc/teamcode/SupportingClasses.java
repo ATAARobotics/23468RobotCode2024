@@ -89,7 +89,7 @@ class CraigCameraPipeline extends OpenCvPipeline
 
 
     static final int bluenessThreshold = 135;
-    static final int rednessThreshold = 5 ;
+    static final int rednessThreshold = 135 ;
 
 
 

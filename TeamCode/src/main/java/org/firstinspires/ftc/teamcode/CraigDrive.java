@@ -227,7 +227,7 @@ public class CraigDrive extends LinearOpMode {
         leftArm.setPosition(0.6);
         sleep(300);
         leftClaw.setPosition(0.0);
-        sleep(300);
+        sleep(750);
         leftArm.setPosition(0.3);
         actionCompleteCommanderReadyForNextCommand();
     }
