@@ -63,6 +63,8 @@ public class CraigFarAuto extends LinearOpMode {
 
     double endOfWaitTime;
     boolean isWaiting = false;
+	boolean eligibleForTransition = false;
+    boolean doingFineAdjustments = false;
 
     public DcMotor Dave_fb = null; //dave is forward/backwards, jeff is side to side
     public int zeroDave_fb = 0;
@@ -138,9 +140,12 @@ public class CraigFarAuto extends LinearOpMode {
                 wait((int) currAction.amt);
                 break;
             case "navigateToAprilTag":
+				//visionPortal.resumeStreaming();
+                //sleep(500);
                 driveToAprilTag((int) currAction.amt);
                 break;
             case "theBIGSlap":
+				visionPortal.stopStreaming();
                 theBIGSlap();
                 break;
         }
@@ -173,6 +178,7 @@ public class CraigFarAuto extends LinearOpMode {
             currBlock = nextStateToLoad.nextBlockIfFalse;
             nextStateToLoad = nextStateToLoad.nextStateIfFalse;
         }
+		currAction = currBlock.autoActionQueue.poll();											  
     }
 
     public void actionCompleteCommanderReadyForNextCommand() {
@@ -197,6 +203,11 @@ public class CraigFarAuto extends LinearOpMode {
             nextBlockOfActionsIs();
         }
 
+		eligibleForTransition = false;
+        frameCountInStandstill = 0;
+        targetHeadingLastItr = -1;
+        targetDistance_lrLastItr = -1;
+        targetDistance_fbLastItr = -1;
     }
 
     public void setHeading(double heading) {
@@ -222,7 +233,7 @@ public class CraigFarAuto extends LinearOpMode {
         leftArm.setPosition(0.6);
         sleep(300);
         leftClaw.setPosition(0.0);
-        sleep(300);
+        sleep(400);
         leftArm.setPosition(0.3);
         actionCompleteCommanderReadyForNextCommand();
     }
@@ -245,6 +256,7 @@ public class CraigFarAuto extends LinearOpMode {
     }
 
     public void driveToAprilTag(int idTarget) {
+		eligibleForTransition = false;
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
@@ -263,7 +275,7 @@ public class CraigFarAuto extends LinearOpMode {
 
         if (!weSawTheTagThisFrame) {
             framesSinceLastTagSighting += 1;
-            if (framesSinceLastTagSighting > 5) {
+            if (framesSinceLastTagSighting > 2) {
                 targetDistance_lr = (Jeff_lr.getCurrentPosition() - zeroJeff_lr);
                 targetDistance_fb = (Dave_fb.getCurrentPosition() - zeroDave_fb);
                 detectedTag = null;
@@ -273,6 +285,11 @@ public class CraigFarAuto extends LinearOpMode {
         telemetry.addData("Navigating to tag", idTarget);
         // if so drive in that direction
         if (detectedTag != null) {
+			telemetry.addLine(String.format("\n==== (ID %d) %s", detectedTag.id, detectedTag.metadata.name));
+            telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detectedTag.ftcPose.x, detectedTag.ftcPose.y, detectedTag.ftcPose.z));
+            telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detectedTag.ftcPose.pitch, detectedTag.ftcPose.roll, detectedTag.ftcPose.yaw));
+            telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detectedTag.ftcPose.range, detectedTag.ftcPose.bearing, detectedTag.ftcPose.elevation));
+            																								 
             if (centeredOnTag && !tooCloseToDetectSlideInTime) { //move in close
                 //time to sneak up to it
                 // forward distance should be 3
@@ -289,6 +306,7 @@ public class CraigFarAuto extends LinearOpMode {
                 } else if (detectedTag.ftcPose.y < 5 && !tooCloseToDetectSlideInTime){
                     targetDistance_fb -= 450; //final drive in too close for camera to be reliable //was 900
                     tooCloseToDetectSlideInTime = true;
+					eligibleForTransition = true;							 
                 }
             } else if (!centeredOnTag){ //get centred
                 if (detectedTag.ftcPose.bearing > -23.0) {
@@ -304,13 +322,21 @@ public class CraigFarAuto extends LinearOpMode {
                     centeredOnTag = true;
                     targetDistance_lr = (Jeff_lr.getCurrentPosition() - zeroJeff_lr);
                 }
-            } else {
+           } else {
+                eligibleForTransition = true;
                 //ready to slap after movement is complete; movement code will handle that
             }
-
+        } else {
             // I am lost :(
             telemetry.addData("I don't see the tag :(", idTarget);
+            targetDistance_lr = (Jeff_lr.getCurrentPosition() - zeroJeff_lr);
+            targetDistance_fb = (Dave_fb.getCurrentPosition() - zeroDave_fb);
+            if (framesSinceLastTagSighting > 5) {
+                //its lost hopefully we are close, drop a pixel and go hide
+                eligibleForTransition = true;
+            }
         }
+
     }
 
 
@@ -418,21 +444,47 @@ public class CraigFarAuto extends LinearOpMode {
 
         }
 
-        if ( targetHeadingLastItr == toGoHeading
+        telemetry.addData("HD", toGoHeading);
+        telemetry.addData("FB", distanceToTarget_fb);
+        telemetry.addData("LR", distanceToTarget_lr);
+        double TOLERANCE = 80;
+        double ROTTOLERANCE = 0.5;
+        if ( eligibleForTransition
+                && Math.abs(toGoHeading) < ROTTOLERANCE
+                && Math.abs(distanceToTarget_fb) < TOLERANCE // close to dest
+                && Math.abs(distanceToTarget_lr) < TOLERANCE
+
+        ) {
+            frameCountInStandstill = 0;
+            eligibleForTransition = false;
+            targetHeadingLastItr = -1.0;
+            targetDistance_fbLastItr = -1;
+            targetDistance_lrLastItr = -1;
+            actionCompleteCommanderReadyForNextCommand();
+
+        } else if ( eligibleForTransition // Stall Protection
+                && targetHeadingLastItr == toGoHeading
                 && targetDistance_fbLastItr == distanceToTarget_fb
                 && targetDistance_lrLastItr == distanceToTarget_lr
 
         ) {
             frameCountInStandstill += 1;
-            if (frameCountInStandstill > 1) {
+            if (frameCountInStandstill > 3) {
                 frameCountInStandstill = 0;
+                eligibleForTransition = false;
+                targetHeadingLastItr = -1.0;
+                targetDistance_fbLastItr = -1;
+                targetDistance_lrLastItr = -1;
                 actionCompleteCommanderReadyForNextCommand();
             }
         } else {
+            if (currAction != null && currAction.actionType != "navigateToAprilTag") {
+                eligibleForTransition = true;
+            }
             targetHeadingLastItr = toGoHeading;
             targetDistance_fbLastItr = distanceToTarget_fb;
             targetDistance_lrLastItr = distanceToTarget_lr;
-            frameCountInStandstill = 0;
+									   
         }
 
 
@@ -489,39 +541,48 @@ public class CraigFarAuto extends LinearOpMode {
     }
 
     public void setPower(double distToRotation, double distToLinear, double distToDrift) {
-
-        if (Math.abs(distToRotation) > 0.35 || Math.abs(distToLinear) > 40.0 || Math.abs(distToDrift) > 40.0) {
-            if (Math.abs(distToRotation) > 0.35) {
-                targetPower = Math.abs(distToRotation / 80.0);
-            } else if (Math.abs(distToDrift) > 40.0) {
-                targetPower = Math.abs(distToDrift / 1000.0);
+		if(currentMotionType != CurrentMotionType.ROTATE) {
+            if (Math.abs(distToRotation) > 0.35 || Math.abs(distToLinear) > 40.0 || Math.abs(distToDrift) > 40.0) {
+                if (Math.abs(distToRotation) > 0.35) {
+                    targetPower = Math.abs(distToRotation / 80.0);
+                } else if (Math.abs(distToDrift) > 40.0) {
+                    targetPower = Math.abs(distToDrift / 1000.0);
+                } else if (Math.abs(distToLinear) > 40.0) {
+                    targetPower = Math.abs(distToLinear / 8000.0);
+                }
+                targetPower = Math.min(targetPower, 1.0);
+                targetPower = Math.max(targetPower, 0.16);
+            } else {
+                targetPower = 0.0;
+                currPower = 0.0;
             }
-            else if (Math.abs(distToLinear) > 40.0) {
-                targetPower = Math.abs(distToLinear / 8000.0);
-            }
-            targetPower = Math.min(targetPower, 1.0);
-            targetPower = Math.max(targetPower, 0.16);
-        }
-        else {
-            targetPower = 0.0;
-            currPower = 0.0;
-        }
 
-        if (currAction != null && currAction.turbo) {
+            double step = 0.05;
+            if (currAction != null && currAction.turbo) {
+                if (distToLinear > 2500) {
+                    targetPower = 0.75;
+                }
+            }
+													 
+								 
             if (targetPower > currPower) {
-                currPower = currPower + 0.1;
+                currPower = currPower + step;
             } else if (targetPower < currPower) {
-                currPower = currPower - 0.1;
+                currPower = currPower - step;
             }
+
         } else {
-            if (targetPower > currPower) {
-                currPower = currPower + 0.05;
-            } else if (targetPower < currPower) {
-                currPower = currPower - 0.05;
+            if (Math.abs(distToRotation) > 0.35) {
+                targetPower = Math.abs(distToRotation / 90.0);
+                targetPower = Math.min(targetPower, 1.0);
+                targetPower = Math.max(targetPower, 0.3);
+            } else {
+                targetPower = 0.0;
             }
+            currPower = targetPower;
         }
 
-
+        telemetry.addData("power", targetPower);
         motor0_br.set(currPower); //set target power
         motor1_bl.set(currPower); //set target power
         motor2_fr.set(currPower); //set target power
@@ -530,6 +591,8 @@ public class CraigFarAuto extends LinearOpMode {
 
 
     }
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -676,23 +739,31 @@ public class CraigFarAuto extends LinearOpMode {
         while (opModeInInit()) {
 
             telemetry.addData("isMonkeyVisible?", cameraPipeline.doISeeMonkey());
+			telemetry.addData("Front Camera State", frontCamera.getFps() );
+            telemetry.addData("Rear Camera State", visionPortal.getCameraState() );
             telemetry.update();
         }
 
         waitForStart();
 
         nextBlockOfActionsIs();
-        actionCompleteCommanderReadyForNextCommand();
+        //actionCompleteCommanderReadyForNextCommand();
 
         while (opModeIsActive()) {
 
             this.executeCurrAction();
             this.figureOutMovement();
+			if ( currAction != null) {
+                telemetry.addData("state", currAction.actionType );
+            } else {
+                telemetry.addLine("noActions" );
+            }
 
-            telemetry.addData("power?", currPower);
-            telemetry.addData("FB", targetDistance_fb - (Dave_fb.getCurrentPosition() - zeroDave_fb));
-            telemetry.addData("LR", targetDistance_lr - (Jeff_lr.getCurrentPosition() - zeroJeff_lr));
+            telemetry.addData("isMonkeyVisible?", cameraPipeline.doISeeMonkey());
+
+																									  
             telemetry.update();
+
 
         }
 

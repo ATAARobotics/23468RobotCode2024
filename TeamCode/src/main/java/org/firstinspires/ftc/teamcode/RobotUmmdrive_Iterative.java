@@ -22,6 +22,8 @@ public class RobotUmmdrive_Iterative extends OpMode {
     public Servo frontdoor;//FrontDoor
     public Servo Servo4;
     public Servo Servodrone;
+    public Servo ServoArm;
+    public Servo ServoClaw;
 
     float RTtrigger;
     float LTtrigger;
@@ -29,6 +31,8 @@ public class RobotUmmdrive_Iterative extends OpMode {
     float RTtrigger2;
     boolean Abutton;
     boolean Xbutton;
+    boolean RTbumper;
+    boolean LTbumper;
 
 
     double daveprev = 0;
@@ -48,17 +52,18 @@ public class RobotUmmdrive_Iterative extends OpMode {
     public void init() {
 
         // Define and Initialize Motors
-        motor0 = hardwareMap.get(DcMotor.class, "motor0");
-        motor1 = hardwareMap.get(DcMotor.class, "motor1");
-        motor2 = hardwareMap.get(DcMotor.class, "motor2");
-        motor3 = hardwareMap.get(DcMotor.class, "motor3");
-        motor4 = hardwareMap.get(DcMotor.class, "motor4");
-        Servo1 = hardwareMap.get(Servo.class, "Servo1"); //arm release
-        Servo2 = hardwareMap.get(Servo.class, "Servo2"); //back door
-        frontdoor = hardwareMap.get(Servo.class, "Servo3"); //front door
-        Servo4 = hardwareMap.get(Servo.class, "Servo4");
-        Servodrone = hardwareMap.get(Servo.class, "servo drone");
+        motor0 = hardwareMap.get(DcMotor.class, "br");
+        motor1 = hardwareMap.get(DcMotor.class, "bl");
+        motor2 = hardwareMap.get(DcMotor.class, "fr");
+        motor3 = hardwareMap.get(DcMotor.class, "fl");
+        motor4 = hardwareMap.get(DcMotor.class, "Hang Motor");
+        Servo1 = hardwareMap.get(Servo.class, "Hang Release"); //arm release
+        Servo2 = hardwareMap.get(Servo.class, "Back Gate"); //back door
+        frontdoor = hardwareMap.get(Servo.class, "Front Gate"); //front door
+        Servodrone = hardwareMap.get(Servo.class, "Plane Launch");
         imu = hardwareMap.get(IMU.class, "imu");
+        ServoArm = hardwareMap.get(Servo.class, "Left Arm");
+        ServoClaw = hardwareMap.get(Servo.class, "Left Claw");
 
         Dave = hardwareMap.get(DcMotor.class, "Dave");//forward back
         Jeff = hardwareMap.get(DcMotor.class, "Jeff");//left right
@@ -77,7 +82,9 @@ public class RobotUmmdrive_Iterative extends OpMode {
         Servo1.setPosition(0);
         Servo2.setPosition(0.3);
         frontdoor.setPosition(0);
-        Servo4.setPosition(1);
+        Servodrone.setPosition(0);
+        ServoArm.setPosition(0.05);
+        ServoClaw.setPosition(1);
 
 
 
@@ -97,10 +104,14 @@ public class RobotUmmdrive_Iterative extends OpMode {
             telemetry.addData("Dave > ", davecur);
 
 
-            RTtrigger2 = gamepad1.right_trigger;
-            LTtrigger2 = gamepad1.left_trigger;
-            Abutton = gamepad1.a;
-            Xbutton = gamepad1.x;
+            RTtrigger2 = gamepad2.right_trigger;
+            LTtrigger2 = gamepad2.left_trigger;
+            Abutton = gamepad2.a;
+            Xbutton = gamepad2.x;
+            RTbumper = gamepad2.right_bumper;
+            LTbumper = gamepad2.left_bumper;
+            boolean self_hang = gamepad2.y;
+            boolean self_destruct = gamepad2.b;
 
             telemetry.addData("Abutton > ", Abutton);
             if (Abutton) {
@@ -114,7 +125,7 @@ public class RobotUmmdrive_Iterative extends OpMode {
             } else {
                 Servodrone.setPosition(0);
             }
-            telemetry.addData("RTrigger > ", LTtrigger2);
+            telemetry.addData("LTtrigger > ", LTtrigger2);
             if (LTtrigger2 > 0.0) {
                 Servo2.setPosition(0);
             } else {
@@ -126,14 +137,25 @@ public class RobotUmmdrive_Iterative extends OpMode {
             } else {
                 frontdoor.setPosition(0.0);
             }
+            telemetry.addData("RTbumper > ", RTbumper);
+            if (LTbumper) {
+               // Servo2.setPosition(0);
+            } else {
+                //Servo2.setPosition(0.3);
+            }
+            telemetry.addData("LTbumper > ",LTbumper);
+            if (RTbumper) {
+               // frontdoor.setPosition(0.3);
+            } else {
+               // frontdoor.setPosition(0.0);
+            }
 
-            double x = gamepad1.right_stick_x;
-            double y = -gamepad1.right_stick_y;
+            double x = -gamepad1.right_stick_x;
+            double y = gamepad1.right_stick_y;
             double rx = gamepad1.left_stick_x;
             double sped = 0.7;
             double rxSped = 0.5;
-            boolean self_hang = gamepad1.y;
-            boolean self_destruct = gamepad1.b;
+
 
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
