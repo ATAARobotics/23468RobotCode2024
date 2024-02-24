@@ -33,6 +33,12 @@ public class RobotUmmdrive_Iterative extends OpMode {
     boolean Xbutton;
     boolean RTbumper;
     boolean LTbumper;
+    boolean DpadDown;
+
+    boolean pos1;
+    boolean pos2;
+    boolean pos3;
+    boolean bumperRelease;
 
 
     double daveprev = 0;
@@ -82,11 +88,11 @@ public class RobotUmmdrive_Iterative extends OpMode {
         Servo1.setPosition(0);
         Servo2.setPosition(0.3);
         frontdoor.setPosition(0);
-        Servodrone.setPosition(0);
-        ServoArm.setPosition(0.05);
+        Servodrone.setPosition(0.55);
+        ServoArm.setPosition(0);
         ServoClaw.setPosition(1);
 
-
+        pos2 = true;
 
     }
 
@@ -112,6 +118,7 @@ public class RobotUmmdrive_Iterative extends OpMode {
             LTbumper = gamepad2.left_bumper;
             boolean self_hang = gamepad2.y;
             boolean self_destruct = gamepad2.b;
+            DpadDown = gamepad2.dpad_down;
 
             telemetry.addData("Abutton > ", Abutton);
             if (Abutton) {
@@ -123,7 +130,7 @@ public class RobotUmmdrive_Iterative extends OpMode {
             if (Xbutton) {
                 Servodrone.setPosition(1);
             } else {
-                Servodrone.setPosition(0);
+                Servodrone.setPosition(0.55);
             }
             telemetry.addData("LTtrigger > ", LTtrigger2);
             if (LTtrigger2 > 0.0) {
@@ -138,16 +145,52 @@ public class RobotUmmdrive_Iterative extends OpMode {
                 frontdoor.setPosition(0.0);
             }
             telemetry.addData("RTbumper > ", RTbumper);
-            if (LTbumper) {
-               // Servo2.setPosition(0);
-            } else {
-                //Servo2.setPosition(0.3);
-            }
             telemetry.addData("LTbumper > ",LTbumper);
-            if (RTbumper) {
-               // frontdoor.setPosition(0.3);
+            telemetry.addData("DpadDown > ",DpadDown);
+            telemetry.addData("pos1 > ", pos1);
+            telemetry.addData("pos2 > ", pos2);
+            telemetry.addData("pos3 > ", pos3);
+
+            if (LTbumper && pos1 && bumperRelease) {
+                pos1 = false;
+                pos2 = true;
+                ServoArm.setPosition(0.0);
+
+            }
+            else if (LTbumper && pos2 && bumperRelease) {
+                pos2 = false;
+                pos3 = true;
+                ServoArm.setPosition(0.5);
+            }
+            else if (LTbumper && pos3 && bumperRelease) {
+                pos3 = false;
+                pos1 = true;
+                ServoArm.setPosition(0.9);
+            }
+            if (RTbumper && pos3 && bumperRelease) {
+                pos3 = false;
+                pos2 = true;
+                ServoArm.setPosition(0.0);
+            }
+            else if (RTbumper && pos2 && bumperRelease) {
+                pos2 = false;
+                pos1 = true;
+                ServoArm.setPosition(0.9);
+            }
+            else if (RTbumper && pos1 && bumperRelease) {
+                pos1 = false;
+                pos3 = true;
+                ServoArm.setPosition(0.5);
+            }
+            if (!LTbumper && !RTbumper) {
+                bumperRelease = true;
             } else {
-               // frontdoor.setPosition(0.0);
+                bumperRelease = false;
+            }
+            if (DpadDown) {
+                ServoClaw.setPosition(0);
+            } else {
+                ServoClaw.setPosition(1);
             }
 
             double x = -gamepad1.right_stick_x;

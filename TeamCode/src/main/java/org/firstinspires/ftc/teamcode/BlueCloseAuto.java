@@ -1,27 +1,23 @@
 package org.firstinspires.ftc.teamcode;
 
-import java.lang.Math;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
-
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import com.qualcomm.robotcore.hardware.Servo;
+
+import java.util.List;
 
 //DONE: Create a drive right a distance func
 //      DONE: Replicate for when we are moving Left and right
@@ -35,9 +31,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 //TODO: Give the board a slap
 
 
-
-@Autonomous(name = "CraigDrive", group = "Concept")
-public class CraigDrive extends LinearOpMode {
+@Autonomous(name = "BlueCloseAuto", group = "Concept")
+public class BlueCloseAuto extends LinearOpMode {
     public int callCount = 0;
     public Motor motor0_br = null; //Back right
     public Motor motor1_bl = null; //Back left
@@ -96,7 +91,7 @@ public class CraigDrive extends LinearOpMode {
     public BlockOfActions currBlock = null;
     public StateFlowAbstract nextStateToLoad = null;
 
-    public CraigCameraPipeline cameraPipeline = new CraigCameraPipeline(false); // -------------------------------------------------------------------CHANGE THIS TO DETECT RED/BLUE
+    public CraigCameraPipeline cameraPipeline = new CraigCameraPipeline(true); // -------------------------------------------------------------------CHANGE THIS TO DETECT RED/BLUE
 
     final double fx = 466.664;
     final double fy = 466.664;
@@ -658,23 +653,23 @@ public class CraigDrive extends LinearOpMode {
 
         /* PLACE AUTO COMMANDS HERE! */
 
-        /* THIS DOES BACK STAGE WITH CENTER RED MONKE */
+        /* THIS DOES BACK STAGE WITH CENTER BlUE MONKE */
         placePixelInCentre.addActionToQueue("driveForwardADistance", 24);
         placePixelInCentre.addActionToQueue("dropPixel", 0);
         placePixelInCentre.addActionToQueue("driveForwardADistance", 4);
         placePixelInCentre.addActionToQueue("driveForwardADistance", -5);
-        placePixelInCentre.addActionToQueue("faceHeading", 90);
+        placePixelInCentre.addActionToQueue("faceHeading", -90);
         placePixelInCentre.addActionToQueue("driveForwardADistance", -12);
-        placePixelInCentre.addActionToQueue("driveRightADistance", 12 );
-        placePixelInCentre.addActionToQueue("navigateToAprilTag", 5);
-        placePixelInCentre.addActionToQueue("driveRightADistance", -2 );
+       // placePixelInCentre.addActionToQueue("driveRightADistance", 0);
+        placePixelInCentre.addActionToQueue("navigateToAprilTag", 2);
+        placePixelInCentre.addActionToQueue("driveRightADistance", -2);
         placePixelInCentre.addActionToQueue("driveForwardADistance", -2);
         placePixelInCentre.addActionToQueue("theBIGSlap", 0);
         placePixelInCentre.addActionToQueue("driveForwardADistance", 2);
-        placePixelInCentre.addActionToQueue("driveRightADistance", -33);
+        placePixelInCentre.addActionToQueue("driveRightADistance", 23);
 
         goToRightForCheck.addActionToQueue("driveForwardADistance", 6);
-        goToRightForCheck.addActionToQueue("driveRightADistance", 11);
+        goToRightForCheck.addActionToQueue("driveRightADistance", -11);
 
         placePixelOnRight.addActionToQueue("driveForwardADistance", 10);
         placePixelOnRight.addActionToQueue("driveRightADistance", 3);
@@ -682,25 +677,25 @@ public class CraigDrive extends LinearOpMode {
         placePixelOnRight.addActionToQueue("driveForwardADistance", 2);
         //placePixelOnRight.addActionToQueue("wait", 0.5);
         placePixelOnRight.addActionToQueue("driveForwardADistance", -6);
-        placePixelOnRight.addActionToQueue("faceHeading", 90);
+        placePixelOnRight.addActionToQueue("faceHeading", -90);
         placePixelOnRight.addActionToQueue("driveForwardADistance", -12);
-        placePixelOnRight.addActionToQueue("driveRightADistance", 15);
-        placePixelOnRight.addActionToQueue("navigateToAprilTag", 6);
+        placePixelOnRight.addActionToQueue("driveRightADistance", -5);
+        placePixelOnRight.addActionToQueue("navigateToAprilTag", 1);
         placePixelOnRight.addActionToQueue("driveForwardADistance", -2);
         placePixelOnRight.addActionToQueue("theBIGSlap", 0);
         placePixelOnRight.addActionToQueue("driveForwardADistance", 2);
-        placePixelOnRight.addActionToQueue("driveRightADistance", -26);
+        placePixelOnRight.addActionToQueue("driveRightADistance", 14);
 
         placePixelOnLeft.addActionToQueue("driveForwardADistance", 24);
-        placePixelOnLeft.addActionToQueue("faceHeading", 90);
+        placePixelOnLeft.addActionToQueue("faceHeading", -90);
         placePixelOnLeft.addActionToQueue("dropPixel", 0);
         //placePixelOnLeft.addActionToQueue("wait", 0.5);
-        placePixelOnLeft.addActionToQueue("driveForwardADistance", 11);
-        placePixelOnLeft.addActionToQueue("navigateToAprilTag", 4);
+        placePixelOnLeft.addActionToQueue("driveForwardADistance", 15);
+        placePixelOnLeft.addActionToQueue("navigateToAprilTag", 3);
         placePixelOnLeft.addActionToQueue("driveForwardADistance", -2);
         placePixelOnLeft.addActionToQueue("theBIGSlap", 0);
         placePixelOnLeft.addActionToQueue("driveForwardADistance", 2);
-        placePixelOnLeft.addActionToQueue("driveRightADistance", -39);
+        placePixelOnLeft.addActionToQueue("driveRightADistance", 39);
 
 
         //testBlock.addActionToQueue("navigateToAprilTag", 5);

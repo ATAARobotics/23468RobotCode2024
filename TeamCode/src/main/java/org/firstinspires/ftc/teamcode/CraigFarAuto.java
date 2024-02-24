@@ -40,6 +40,7 @@ public class CraigFarAuto extends LinearOpMode {
     public Servo dropPixel = null;
     public Servo leftArm = null;
     public Servo leftClaw = null;
+    public Servo Servodrone = null;
 
     public double targetPower = 0.0;
     public double currPower = 0.0;
@@ -231,9 +232,9 @@ public class CraigFarAuto extends LinearOpMode {
 
     public void theBIGSlap(){
         leftArm.setPosition(0.6);
-        sleep(300);
-        leftClaw.setPosition(0.0);
         sleep(400);
+        leftClaw.setPosition(0.0);
+        sleep(500);
         leftArm.setPosition(0.3);
         actionCompleteCommanderReadyForNextCommand();
     }
@@ -304,7 +305,7 @@ public class CraigFarAuto extends LinearOpMode {
                     targetDistance_fb -= 300;
                     telemetry.addData("Jeff", (Jeff_lr.getCurrentPosition() - zeroJeff_lr));
                 } else if (detectedTag.ftcPose.y < 5 && !tooCloseToDetectSlideInTime){
-                    targetDistance_fb -= 450; //final drive in too close for camera to be reliable //was 900
+                    targetDistance_fb -= 600; //final drive in too close for camera to be reliable //was 900
                     tooCloseToDetectSlideInTime = true;
 					eligibleForTransition = true;							 
                 }
@@ -606,6 +607,8 @@ public class CraigFarAuto extends LinearOpMode {
         leftArm.setPosition(0.0);
         leftClaw = hardwareMap.get(Servo.class, "Left Claw");
         leftClaw.setPosition(1);
+        Servodrone = hardwareMap.get(Servo.class, "Plane Launch");
+        Servodrone.setPosition(0.55);
 
 
         Dave_fb = hardwareMap.get(DcMotor.class, "Dave");//forward back
@@ -655,16 +658,16 @@ public class CraigFarAuto extends LinearOpMode {
         /* PLACE AUTO COMMANDS HERE! */
 
         /* THIS DOES BACK STAGE WITH CENTER RED MONKE */
-        placePixelInCentre.addActionToQueue("driveForwardADistance", 47);
-        //placePixelInCentre.addActionToQueue("faceHeading", 180);
+        placePixelInCentre.addActionToQueue("driveForwardADistance", 29);
         placePixelInCentre.addActionToQueue("dropPixel", 0);
-        placePixelInCentre.addActionToQueue("driveForwardADistance", 6);//-6
-        placePixelInCentre.addActionToQueue("driveRightADistance", 70);//-70
+        placePixelInCentre.addActionToQueue("driveForwardADistance", -3);
+        placePixelInCentre.addActionToQueue("driveRightADistance", -15);
+        placePixelInCentre.addActionToQueue("driveForwardADistance", 29);
+        placePixelInCentre.addActionToQueue("driveRightADistance", 88);
         placePixelInCentre.addActionToQueue("faceHeading", 90);
         placePixelInCentre.addActionToQueue("driveRightADistance", -30);
-        placePixelInCentre.addActionToQueue("driveForwardADistance", -12);
-        placePixelInCentre.addActionToQueue("driveRightADistance", 12);
         placePixelInCentre.addActionToQueue("navigateToAprilTag", 5);
+        placePixelInCentre.addActionToQueue("driveForwardADistance", -2);
         placePixelInCentre.addActionToQueue("theBIGSlap", 0);
 
 
@@ -679,27 +682,36 @@ public class CraigFarAuto extends LinearOpMode {
         placePixelOnLeft.addActionToQueue("driveRightADistance", 2);
         placePixelOnLeft.addActionToQueue("faceHeading", 0);
         placePixelOnLeft.addActionToQueue("driveRightADistance", 5);
-        placePixelOnLeft.addActionToQueue("driveForwardADistance", 35, true);
-        placePixelOnLeft.addActionToQueue("driveRightADistance", 70, true);
+        placePixelOnLeft.addActionToQueue("driveForwardADistance", 35);
+        placePixelOnLeft.addActionToQueue("driveRightADistance", 70);
         placePixelOnLeft.addActionToQueue("faceHeading", 90);
-        placePixelOnLeft.addActionToQueue("driveRightADistance", -20, true);
+        placePixelOnLeft.addActionToQueue("driveRightADistance", -20);
         placePixelOnLeft.addActionToQueue("navigateToAprilTag", 4);
+        placePixelOnLeft.addActionToQueue("driveForwardADistance", -2);
         placePixelOnLeft.addActionToQueue("theBIGSlap", 0);
-        //placePixelOnRight.addActionToQueue("driveForwardADistance", 2);
-        //placePixelOnRight.addActionToQueue("driveRightADistance", -26);
-
-        /*placePixelOnLeft.addActionToQueue("driveForwardADistance", 28);
-        placePixelOnLeft.addActionToQueue("faceHeading", 90);
-        placePixelOnLeft.addActionToQueue("dropPixel", 0);
-        //placePixelOnLeft.addActionToQueue("wait", 0.5);
-        placePixelOnLeft.addActionToQueue("driveForwardADistance", 8);
-        placePixelOnLeft.addActionToQueue("navigateToAprilTag", 4);
-        placePixelOnLeft.addActionToQueue("theBIGSlap", 0);
-        placePixelOnLeft.addActionToQueue("driveForwardADistance", 2);
-        placePixelOnLeft.addActionToQueue("driveRightADistance", -39);
 
 
-        testBlock.addActionToQueue("navigateToAprilTag", 5);
+
+        placePixelOnRight.addActionToQueue("faceHeading", 0);
+        placePixelOnRight.addActionToQueue("driveForwardADistance", 27);
+        placePixelOnRight.addActionToQueue("faceHeading", -90);
+        placePixelOnRight.addActionToQueue("dropPixel", 0);
+        placePixelOnRight.addActionToQueue("driveForwardADistance", 3);
+        placePixelOnRight.addActionToQueue("wait", 0.5);
+        placePixelOnRight.addActionToQueue("driveForwardADistance", -6);
+        placePixelOnRight.addActionToQueue("driveRightADistance", -26);
+        placePixelOnRight.addActionToQueue("faceHeading", 0);
+        placePixelOnRight.addActionToQueue("driveRightADistance", 75);
+        placePixelOnRight.addActionToQueue("faceHeading", 90);
+        placePixelOnRight.addActionToQueue("driveRightADistance", -35);
+        placePixelOnRight.addActionToQueue("navigateToAprilTag", 6);
+        placePixelOnRight.addActionToQueue("driveRightADistance",-2);
+        placePixelOnRight.addActionToQueue("driveForwardADistance", -2);
+        placePixelOnRight.addActionToQueue("theBIGSlap", 0);
+
+
+
+        /*testBlock.addActionToQueue("navigateToAprilTag", 5);
         testBlock.addActionToQueue("theBIGSlap", 0);
         testBlock.addActionToQueue("driveRightADistance", -33);*/
         //Pixl arm up
