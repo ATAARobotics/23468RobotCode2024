@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name="Robot: Ummdrive", group="drive")
+@TeleOp(name="Robot: bob", group="drive")
 public class self_destruct_program extends OpMode {
 
     public DcMotor motor0   = null;
