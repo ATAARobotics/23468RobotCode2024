@@ -14,14 +14,13 @@ public class self_destruct_program extends OpMode {
 
     public DcMotor motor0   = null;
     public DcMotor  motor1  = null;
-
-
-
-
-
     public DcMotor Dave = null;
     public DcMotor Jeff = null;
+    public Servo  servo0 = null;
+    public Servo  servo1 = null;
     IMU imu = null;
+    float RTtrigger;
+
     double rotcur = 0;
     @Override
     public void init() {
@@ -29,32 +28,33 @@ public class self_destruct_program extends OpMode {
         // Define and Initialize Motors
         motor0 = hardwareMap.get(DcMotor.class, "br");
         motor1 = hardwareMap.get(DcMotor.class, "bl");
-
+        servo0 = hardwareMap.get(Servo.class, "servo0");
+        servo1 = hardwareMap.get(Servo.class, "servo1");
         imu = hardwareMap.get(IMU.class, "imu");
 
-
-
-
-
+        servo0.setPosition(0.1);
+        servo1.setPosition(0.1);
     }
-
     @Override
         public void loop() {
-
-
-            double y = gamepad1.right_stick_y;
-
+            double y = -gamepad1.right_stick_y;
             double b = gamepad1.left_stick_y;
+            double speed = 0.75;
+
+            motor0.setPower(speed * b);
+            motor1.setPower(speed * y);
+
+            RTtrigger = gamepad1.right_trigger;
+
+        if (RTtrigger > 0.0) {
+            servo0.setPosition(0.1);
+            servo1.setPosition(0.1);
+        } else {
+            servo0.setPosition(0.4);
+            servo1.setPosition(0.4);
 
 
-
-            motor0.setPower(b);
-            motor1.setPower(y);
-
-
-
-
-
+        }
 
         }
             double left;
@@ -64,7 +64,6 @@ public class self_destruct_program extends OpMode {
 
             }
 }
-
 
 
 
