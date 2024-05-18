@@ -21,7 +21,7 @@ import java.util.List;
 
 
 @Autonomous(name = "CraigFarAuto", group = "Concept")
-public class CraigFarAuto extends LinearOpMode {
+public class Alexam_Autonomous extends LinearOpMode {
     public Motor motor0_br = null; //Back right
     public Motor motor1_bl = null; //Back left
     public Motor motor2_fr = null; //front right
@@ -65,10 +65,8 @@ public class CraigFarAuto extends LinearOpMode {
     public IMU imu;
     public RevHubOrientationOnRobot orientationOnRobot;
 
-    public BlockOfActions placePixelInCentre = new BlockOfActions("placePixelInCentre");
-    public BlockOfActions goToLeftForCheck = new BlockOfActions("goToRightForCheck");
-    public BlockOfActions placePixelOnRight = new BlockOfActions("placePixelOnRight");
-    public BlockOfActions placePixelOnLeft = new BlockOfActions("placePixelOnLeft");
+    public BlockOfActions pixelinplate = new BlockOfActions("pixelinplate");
+
 
     public BlockOfActions testBlock = new BlockOfActions("testBlock");
 
@@ -110,13 +108,13 @@ public class CraigFarAuto extends LinearOpMode {
         }
 
         switch (currAction.actionType) {
-            case "faceHeading":
+            case "turn":
                 currentMotionType = CurrentMotionType.ROTATE;
                 this.setHeading(currAction.amt);
                 break;
-            case "driveForwardADistance":
+            case "forward":
                 currentMotionType = CurrentMotionType.FORWARD;
-                this.driveForwardADistance((int) currAction.amt);
+                this.forward((int) currAction.amt);
                 break;
             case "driveRightADistance":
                 currentMotionType = CurrentMotionType.RIGHT;
@@ -204,7 +202,7 @@ public class CraigFarAuto extends LinearOpMode {
         targetHeading = heading;
     }
 
-    public void driveForwardADistance(int distance) {
+    public void forward(int distance) {
         distance = (int)(distance * 333.3);
         targetDistance_fb = distance;
     }
@@ -640,99 +638,46 @@ public class CraigFarAuto extends LinearOpMode {
         visionPortal = builder.build();
 
         // Auto Examples
-        // this.addActionToQueue("faceHeading", 90); // face LEFT
-        // this.addActionToQueue("driveForwardADistance", 16000);
-        // this.addActionToQueue("driveRightADistance", 16000);
+        // this.addActionToQueue("turn", 90); // face LEFT
+        // this.addActionToQueue("forward", 16000);
 
-        /* PLACE AUTO COMMANDS HERE! */
-
-        /* THIS DOES BACK STAGE WITH CENTER RED MONKE */
-        placePixelInCentre.addActionToQueue("driveForwardADistance", 29);
-        placePixelInCentre.addActionToQueue("dropPixel", 0);
-        placePixelInCentre.addActionToQueue("driveForwardADistance", -3);
-        placePixelInCentre.addActionToQueue("driveRightADistance", -15);
-        placePixelInCentre.addActionToQueue("driveForwardADistance", 29);
-        placePixelInCentre.addActionToQueue("driveRightADistance", 88);
-        placePixelInCentre.addActionToQueue("faceHeading", 90);
-        placePixelInCentre.addActionToQueue("driveRightADistance", -30);
-        placePixelInCentre.addActionToQueue("navigateToAprilTag", 5);
-        placePixelInCentre.addActionToQueue("driveForwardADistance", -2);
-        placePixelInCentre.addActionToQueue("theBIGSlap", 0);
-
-
-        //goToRightForCheck.addActionToQueue("driveForwardADistance", 6);
-        //goToRightForCheck.addActionToQueue("driveRightADistance", 11);
-
-        goToLeftForCheck.addActionToQueue("driveForwardADistance", 2);
-        goToLeftForCheck.addActionToQueue("faceHeading", 21);
-
-        placePixelOnLeft.addActionToQueue("driveForwardADistance", 17);
-        placePixelOnLeft.addActionToQueue("dropPixel", 0);
-        placePixelOnLeft.addActionToQueue("driveRightADistance", 2);
-        placePixelOnLeft.addActionToQueue("faceHeading", 0);
-        placePixelOnLeft.addActionToQueue("driveRightADistance", 5);
-        placePixelOnLeft.addActionToQueue("driveForwardADistance", 35);
-        placePixelOnLeft.addActionToQueue("driveRightADistance", 70);
-        placePixelOnLeft.addActionToQueue("faceHeading", 90);
-        placePixelOnLeft.addActionToQueue("driveRightADistance", -20);
-        placePixelOnLeft.addActionToQueue("navigateToAprilTag", 4);
-        placePixelOnLeft.addActionToQueue("driveForwardADistance", -2);
-        placePixelOnLeft.addActionToQueue("theBIGSlap", 0);
-
+        pixelinplate.addActionToQueue("forward", 12);
+        pixelinplate.addActionToQueue("dropPixel", 1);
+        pixelinplate.addActionToQueue("forward", -12);
+        pixelinplate.addActionToQueue("turn",-90 );
+        pixelinplate.addActionToQueue("forward", 10);
+        pixelinplate.addActionToQueue("dropPixel", 1);
+        pixelinplate.addActionToQueue("forward", -10);
+        pixelinplate.addActionToQueue("turn", 90);
+        pixelinplate.addActionToQueue("forward", 12);
+        pixelinplate.addActionToQueue("dropPixel", 1);
+        pixelinplate.addActionToQueue("forward", -12);
+        //no claw
+        pixelinplate.addActionToQueue("turn", -90);
+        pixelinplate.addActionToQueue("forward", 40);
+        pixelinplate.addActionToQueue("dropPixel", 1);
+        pixelinplate.addActionToQueue("forward", -40);
+        pixelinplate.addActionToQueue("turn", 90);
+        pixelinplate.addActionToQueue("forward", 12);
+        pixelinplate.addActionToQueue("dropPixel", 1);
+        pixelinplate.addActionToQueue("forward", 24);
+        //with claw
+        pixelinplate.addActionToQueue("turn", 90);
+        pixelinplate.addActionToQueue("forward", -40);
+        pixelinplate.addActionToQueue("dropPixel", 1);
+        pixelinplate.addActionToQueue("forward", 35);
+        pixelinplate.addActionToQueue("turn", -90);
+        pixelinplate.addActionToQueue("forward", 23);
+        pixelinplate.addActionToQueue("turn", -90);
+        //rest
+        pixelinplate.addActionToQueue("turn", -90);
+        pixelinplate.addActionToQueue("forward", 48);
+        pixelinplate.addActionToQueue("turn", -90);
+        pixelinplate.addActionToQueue("forward", 72);
+        pixelinplate.addActionToQueue("turn", -90);
 
 
-        placePixelOnRight.addActionToQueue("faceHeading", 0);
-        placePixelOnRight.addActionToQueue("driveForwardADistance", 27);
-        placePixelOnRight.addActionToQueue("faceHeading", -90);
-        placePixelOnRight.addActionToQueue("dropPixel", 0);
-        placePixelOnRight.addActionToQueue("driveForwardADistance", 3);
-        placePixelOnRight.addActionToQueue("wait", 0.5);
-        placePixelOnRight.addActionToQueue("driveForwardADistance", -6);
-        placePixelOnRight.addActionToQueue("driveRightADistance", -26);
-        placePixelOnRight.addActionToQueue("faceHeading", 0);
-        placePixelOnRight.addActionToQueue("driveRightADistance", 75);
-        placePixelOnRight.addActionToQueue("faceHeading", 90);
-        placePixelOnRight.addActionToQueue("driveRightADistance", -35);
-        placePixelOnRight.addActionToQueue("navigateToAprilTag", 6);
-        placePixelOnRight.addActionToQueue("driveRightADistance",-2);
-        placePixelOnRight.addActionToQueue("driveForwardADistance", -2);
-        placePixelOnRight.addActionToQueue("theBIGSlap", 0);
-
-
-
-        /*testBlock.addActionToQueue("navigateToAprilTag", 5);
-        testBlock.addActionToQueue("theBIGSlap", 0);
-        testBlock.addActionToQueue("driveRightADistance", -33);*/
-        //Pixl arm up
-        //drop pixl
-
-        /*THIS DOES BACK STAGE WITH RIGHT AND RED MONKE
-        this.addActionToQueue("driveForwardADistance", 4000);
-        this.addActionToQueue("driveForwardADistance", 8000);
-        this.addActionToQueue("dropPixel", 0);
-        this.addActionToQueue("driveForwardADistance", 667);
-        this.addActionToQueue("faceHeading", 90);
-        // Detect Right tag(id 6)
-        this.addActionToQueue("DriveForwardADistance", 8000);
-        //pixelArm Up
-        //Drop Pixel
-        this.addActionToQueue("driveRightADistance",-2000 );*/
-        /*
-        this.addActionToQueue("driveForwardADistance", 9666);
-        this.addActionToQueue("faceHeading", 90);
-        this.addActionToQueue("driveForwardADistance", 5333);
-        this.addActionToQueue("dropPixel", 0);
-        this.addActionToQueue("driveForwardADistance", 18333);
-        */
-        //PIXEL UP
-        //DROP Pxl
-        //this.addActionToQueue("driveRightADistance", 7333);
-        /* END AUTO COMMANDS */
-
-        leftCheckForMonkey =  new StateFlowAbstract("leftCheckForMonkey", "monkeyIsVisible", placePixelOnLeft, null, placePixelOnRight, null);
-        initialState = new StateFlowAbstract("initialState", "monkeyIsVisible", placePixelInCentre, null, goToLeftForCheck, leftCheckForMonkey);
-
-        //initialState = new StateFlowAbstract("testState", null, testBlock, null, null, null);
+        //initialState = new StateFlowAbstract("testState", null, testBlock,// null, null, null);
 
         nextStateToLoad = initialState;
 
