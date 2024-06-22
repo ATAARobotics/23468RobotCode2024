@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
-@Autonomous(name = "Alexam_Auto", group = "Concept")
-public class Alexam_Autonomous extends LinearOpMode {
+@Autonomous(name = "Reconnstruct_Auto", group = "Concept")
+public class Reconnstruct_Auto extends LinearOpMode {
     public Motor motor0_br = null; //Back right
     public Motor motor1_bl = null; //Back left
     //public Motor motor2_fr = null; //front right
@@ -49,7 +49,7 @@ public class Alexam_Autonomous extends LinearOpMode {
     public IMU imu;
     public RevHubOrientationOnRobot orientationOnRobot;
 
-    public BlockOfActions pixelinplate = new BlockOfActions("pixelinplate");
+    public BlockOfActions Do_Auto = new BlockOfActions("Do_Auto");
 
 
     public BlockOfActions testBlock = new BlockOfActions("testBlock");
@@ -611,44 +611,10 @@ public class Alexam_Autonomous extends LinearOpMode {
         // this.addActionToQueue("turn", 90); // face LEFT
         // this.addActionToQueue("forward", 16000);
 
-        pixelinplate.addActionToQueue("forward", 12);
-        pixelinplate.addActionToQueue("dropPixel", 1);
-        pixelinplate.addActionToQueue("forward", -12);
-        pixelinplate.addActionToQueue("turn",-90 );
-        pixelinplate.addActionToQueue("forward", 10);
-        pixelinplate.addActionToQueue("dropPixel", 1);
-        pixelinplate.addActionToQueue("forward", -10);
-        pixelinplate.addActionToQueue("turn", 90);
-        pixelinplate.addActionToQueue("forward", 12);
-        pixelinplate.addActionToQueue("dropPixel", 1);
-        pixelinplate.addActionToQueue("forward", -12);
-        //no claw
-        /*pixelinplate.addActionToQueue("turn", -90);
-        pixelinplate.addActionToQueue("forward", 40);
-        pixelinplate.addActionToQueue("dropPixel", 1);
-        pixelinplate.addActionToQueue("forward", -40);
-        pixelinplate.addActionToQueue("turn", 90);
-        pixelinplate.addActionToQueue("forward", 12);
-        pixelinplate.addActionToQueue("dropPixel", 1);
-        pixelinplate.addActionToQueue("forward", 24);*/
-        //with claw
-        pixelinplate.addActionToQueue("turn", 90);
-        pixelinplate.addActionToQueue("forward", -40);
-        pixelinplate.addActionToQueue("dropPixel", 1);
-        pixelinplate.addActionToQueue("forward", 35);
-        pixelinplate.addActionToQueue("turn", -90);
-        pixelinplate.addActionToQueue("forward", 23);
-        pixelinplate.addActionToQueue("turn", -90);
-        //rest
-        pixelinplate.addActionToQueue("turn", -90);
-        pixelinplate.addActionToQueue("forward", 48);
-        pixelinplate.addActionToQueue("turn", -90);
-        pixelinplate.addActionToQueue("forward", 72);
-        pixelinplate.addActionToQueue("turn", -90);
+        Do_Auto.addActionToQueue("forward", -12);
+        Do_Auto.addActionToQueue("turn", -90);
 
-
-
-        initialState = new StateFlowAbstract("pixelinplate", null, pixelinplate, null, null, null);
+        initialState = new StateFlowAbstract("pixelinplate", null, Do_Auto, null, null, null);
         //initialState = new StateFlowAbstract("testState", null, testBlock,// null, null, null);
 
         nextStateToLoad = initialState;
@@ -659,6 +625,7 @@ public class Alexam_Autonomous extends LinearOpMode {
             telemetry.addData("isMonkeyVisible?", cameraPipeline.doISeeMonkey());
 			telemetry.addData("Front Camera State", frontCamera.getFps() );
             telemetry.addData("Rear Camera State", visionPortal.getCameraState() );
+
             */
             telemetry.addData("IMU: ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
             telemetry.addData("motor pos: ", zero_motor0_br);

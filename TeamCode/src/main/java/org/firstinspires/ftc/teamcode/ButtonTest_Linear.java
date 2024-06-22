@@ -33,7 +33,10 @@ import static org.firstinspires.ftc.teamcode.GamepadKeys.ButtonType;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 @TeleOp(name="Button Test", group="Linear OpMode")
@@ -41,14 +44,16 @@ public class ButtonTest_Linear extends LinearOpMode {
 
 
 
-    private Servo test_servo;
+    private DcMotor test_motor;
 
     private Button x_button;
+
+    private int test = 0;
 
     @Override
     public void runOpMode() {
 
-        test_servo = hardwareMap.get(Servo.class, "Left Claw");
+        test_motor = hardwareMap.get(DcMotor.class, "br");
 
 
         x_button = new Button(gamepad1, ButtonType.X);
@@ -62,11 +67,23 @@ public class ButtonTest_Linear extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            x_button.on_pressed( () -> { test_servo.setPosition(1); return null; } );
+            telemetry.addData("Xbutton: ", gamepad1.x);
 
-            x_button.on_release( () -> { test_servo.setPosition(0); return null; } );
+            x_button.on_pressed( () -> { set_test(5); return null; } );
+
+            x_button.on_release( () -> { test_motor.setTargetPosition(0); return null; } );
+
+            telemetry.addData("test val: ", test);
+
+            telemetry.update();
 
         }
+    }
+
+    void set_test(int a) {
+        test += a;
+        test_motor.setTargetPosition(50);
+        test_motor.setPower(0.5);
     }
 
 }
