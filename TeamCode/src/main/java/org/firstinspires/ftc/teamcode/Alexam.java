@@ -73,7 +73,7 @@ public class Alexam extends OpMode {
             }
 
             if (prime) {
-                alexis.setPower(-1);
+                alexis.setPower(-0.125);
             } else {
                 alexis.setPower(0);
             }
@@ -81,7 +81,7 @@ public class Alexam extends OpMode {
             if (temu) {
                 alexam.setPosition(0);
             } else {
-                alexam.setPosition(1);
+                alexam.setPosition(0.6);
             }
 
 }}
